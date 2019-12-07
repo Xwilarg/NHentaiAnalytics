@@ -1,0 +1,15 @@
+{
+    "name": "NHentai Analytics",
+    "version": "1.0.0",
+    "description": "A chrome extension to help you find the best doujinshi based on your favorites",
+    "browser_action": {
+      "default_popup": "index.html"
+    },
+    "permissions": [
+      "tabs",
+      "https://nhentai.net/*",
+      "https://i.nhentai.net/*"
+    ],
+    "author": "Xwilarg",
+    "manifest_version": 2
+}
