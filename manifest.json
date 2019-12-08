@@ -12,5 +12,8 @@
       "https://i.nhentai.net/*"
     ],
     "author": "Xwilarg",
+    "background": {
+      "scripts": ["js/background.js"]
+    },
     "manifest_version": 2
 }
