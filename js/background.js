@@ -63,9 +63,9 @@ function StoreDoujinshis(doujinshis) {
 }
 
 class Doujinshi {
-    constructor(id, image, url) {
+    constructor(id, image, name) {
         this.id = id;
         this.image = image;
-        this.url = url;
+        this.name = name;
     }
 }

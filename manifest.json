@@ -7,7 +7,6 @@
     },
     "permissions": [
       "storage",
-      "http://nhentai.net/*",
       "https://nhentai.net/*",
       "https://i.nhentai.net/*"
     ],
