@@ -48,14 +48,14 @@ function LoadFavoritePage(pageNumber, doujinshis, callback) {
 
 function StoreDoujinshis(doujinshis) {
     let i = 0;
-    let storage = {};
-    while (doujinshis.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM) {
-        storage["doujinshi" + i] = doujinshis.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM);
-        doujinshis = doujinshis.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM, doujinshis.length);
+    let storage = {}; //(new TextEncoder().encode(doujinshis)).length
+    while (doujinshis.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2) {
+        storage["doujinshi" + i] = doujinshis.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2);
+        doujinshis = doujinshis.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2, doujinshis.length);
         i++;
     }
     storage["doujinshi" + i] = doujinshis;
-    console.log(storage);
+    chrome.storage.sync.set(storage);
 }
 
 class Doujinshi {
