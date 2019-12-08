@@ -3,7 +3,9 @@ function GetNextDoujinshi(id, str) {
         if (elems['doujinshi' + id] !== undefined) {
             GetNextDoujinshi(id + 1, str + elems['doujinshi' + id]);
         } else {
-            console.log(JSON.parse("[" + str + "]"));
+            JSON.parse("[" + str + "]").forEach(function(elem) {
+                console.log(elem);
+            });
         }
     });
 }

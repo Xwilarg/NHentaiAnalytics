@@ -2,9 +2,7 @@ chrome.storage.sync.get({
     doujinshiCount: 0
 }, function(elems) {
     if (elems.doujinshiCount == 0) {
-        chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
-            document.getElementById("content").innerHTML = nb + " doujinshis loaded.";
-        });
+        LoadFavorites();
     } else {
         document.getElementById("content").innerHTML = elems.doujinshiCount + " doujinshis loaded.";
     }
@@ -12,11 +10,19 @@ chrome.storage.sync.get({
 
 document.getElementById("update").addEventListener("click", function() {
     document.getElementById("content").innerHTML = "Loading...";
-    chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
-        document.getElementById("content").innerHTML = nb + " doujinshis loaded.";
-    });
+    LoadFavorites();
 });
 
 document.getElementById("preview").addEventListener("click", function() {
     chrome.tabs.create({ url: "preview.html" });
 });
+
+function LoadFavorites() {
+    chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
+        if (nb === undefined) {
+            document.getElementById("content").innerHTML = "You must be logged in NHentai.";
+        } else {
+            document.getElementById("content").innerHTML = nb + " doujinshis loaded.";
+        }
+    });
+}

@@ -3,7 +3,11 @@ function LoadFavorites(callback) {
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                LoadFavoritePage(1, [], callback);
+                if (this.responseText.includes("Abandon all hope, ye who enter here")) {
+                    callback(undefined); // Not logged in
+                } else {
+                    LoadFavoritePage(1, [], callback);
+                }
             } else {
                 console.error("Error while loading doujinshi count (Code " + this.status + ").");
             }
