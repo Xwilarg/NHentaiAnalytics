@@ -3,9 +3,7 @@ function LoadFavorites(callback) {
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                let match = /<h1>My Favorites <span class="count">\(([\d]+)\)<\/span>/.exec(this.responseText); // REGEX to find favorite count
-                callback(match[1]);
-                LoadFavoritePage(1, []);
+                LoadFavoritePage(1, [], callback);
             } else {
                 console.error("Error while loading doujinshi count (Code " + this.status + ").");
             }
@@ -15,7 +13,7 @@ function LoadFavorites(callback) {
     http.send();
 }
 
-function LoadFavoritePage(pageNumber, doujinshis) {
+function LoadFavoritePage(pageNumber, doujinshis, callback) {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -29,17 +27,15 @@ function LoadFavoritePage(pageNumber, doujinshis) {
                     }
                 } while (match);
                 if (currDoujinshis.length > 0) {
-                    LoadFavoritePage(pageNumber + 1, doujinshis.concat(currDoujinshis));
+                    LoadFavoritePage(pageNumber + 1, doujinshis.concat(currDoujinshis), callback);
                 } else {
-                    console.log(chrome.storage.sync.QUOTA_BYTES_PER_ITEM);
-                    console.log(doujinshis.map(function(d) {
+                    StoreDoujinshis(doujinshis.map(function(d) {
                         return JSON.stringify(d);
                     }).toString());
                     chrome.storage.sync.set({
-                        favorites: doujinshis.map(function(d) {
-                            return JSON.stringify(d);
-                        }).toString()
-                    });
+                        doujinshiCount: doujinshis.length
+                    })
+                    callback(doujinshis.length);
                 }
             } else {
                 console.error("Error while loading favorites page " + pageNumber + " (Code " + this.status + ").");
@@ -48,6 +44,18 @@ function LoadFavoritePage(pageNumber, doujinshis) {
     };
     http.open("GET", "https://nhentai.net/favorites/?page=" + pageNumber, true);
     http.send();
+}
+
+function StoreDoujinshis(doujinshis) {
+    let i = 0;
+    let storage = {};
+    while (doujinshis.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM) {
+        storage["doujinshi" + i] = doujinshis.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM);
+        doujinshis = doujinshis.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM, doujinshis.length);
+        i++;
+    }
+    storage["doujinshi" + i] = doujinshis;
+    console.log(storage);
 }
 
 class Doujinshi {
