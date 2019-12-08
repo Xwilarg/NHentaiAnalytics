@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "A chrome extension to help you find the best doujinshi based on your favorites",
     "browser_action": {
-      "default_popup": "index.html"
+      "default_popup": "popup.html"
     },
     "permissions": [
       "storage",
