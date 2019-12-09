@@ -38,8 +38,9 @@ function LoadFavoritePage(pageNumber, doujinshis, callback) {
                     }).toString() + "]");
                     chrome.storage.sync.set({
                         doujinshiCount: doujinshis.length
-                    })
+                    });
                     callback(doujinshis.length);
+                    StoreTags(doujinshis, 0);
                 }
             } else {
                 console.error("Error while loading favorites page " + pageNumber + " (Code " + this.status + ").");
@@ -48,6 +49,20 @@ function LoadFavoritePage(pageNumber, doujinshis, callback) {
     };
     http.open("GET", "https://nhentai.net/favorites/?page=" + pageNumber, true);
     http.send();
+}
+
+function StoreTags(doujinshis, index) { // We wait 500 ms before checking each page so the API doesn't return a 50X error
+    setTimeout(function() {
+        let id = doujinshis[index].id;
+        chrome.storage.sync.get(['tag' + id], function(elems) {
+            if (elems['tag' + id] === undefined) { // If tag is not saved yet in storage
+                StoreTagPage(id);
+            }
+            if (index !== doujinshis.length - 1) {
+                StoreTags(doujinshis, index + 1);
+            }
+        });
+    }, 500);
 }
 
 function StoreTagPage(doujinshiId) {
