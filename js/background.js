@@ -108,7 +108,7 @@ function StoreTagsName() {
 }
 
 function DisplayDounjishis(callback) {
-    callback(g_doujinshis);
+    callback(g_doujinshis, g_tagsPerDoujinshi);
 }
 
 function GetTagsCount() {

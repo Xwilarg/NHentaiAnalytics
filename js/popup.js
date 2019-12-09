@@ -17,6 +17,10 @@ document.getElementById("settings").addEventListener("click", function() {
     chrome.tabs.create({ url: "settings.html" });
 });
 
+document.getElementById("help").addEventListener("click", function() {
+    chrome.tabs.create({ url: "help.html" });
+});
+
 function LoadFavorites() {
     chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
         if (nb === undefined) {
@@ -28,6 +32,3 @@ function LoadFavorites() {
 }
 
 document.getElementById("tagCount").innerHTML = chrome.extension.getBackgroundPage().GetTagsCount() + " tags loaded.";
-setTimeout(function() {
-    document.getElementById("tagCount").innerHTML = chrome.extension.getBackgroundPage().GetTagsCount() + " tags loaded.";
-}, 3000);
