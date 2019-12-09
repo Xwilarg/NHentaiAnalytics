@@ -10,6 +10,7 @@ chrome.storage.sync.get({
 
 document.getElementById("update").addEventListener("click", function() {
     document.getElementById("content").innerHTML = "Loading...";
+    chrome.storage.sync.clear();
     LoadFavorites();
 });
 
