@@ -1,7 +1,6 @@
 let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsPerDoujinshi = {}; // Tags for each doujinshi
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
-let g_tagsName = {}; // Get tag class given it id
 
 function LoadFavorites(callback) {
     let http = new XMLHttpRequest();
@@ -72,13 +71,11 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                     JSON.parse(this.responseText).tags.forEach(function(elem) {
                         let tag = new Tag(elem.id, elem.name, elem.type);
                         g_tagsPerDoujinshi[id].push(tag);
-                        if (g_tagsName[elem.id] === undefined) {
-                            g_tagsName[elem.id] = tag;
-                        }
-                        if (g_tagsCount[elem.id] === undefined) {
-                            g_tagsCount[elem.id] = 1;
+                        let tagId = elem.type + "/" + elem.name;
+                        if (g_tagsCount[tagId] === undefined) {
+                            g_tagsCount[tagId] = 1;
                         } else {
-                            g_tagsCount[elem.id]++;
+                            g_tagsCount[tagId]++;
                         }
                     });
                     if (index + 1 !== g_doujinshis.length) {
@@ -99,7 +96,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
 function StoreTagsName() {
     let i = 0;
     let storage = {};
-    let str = JSON.stringify(g_tagsName);
+    let str = JSON.stringify(g_tagsCount);
     while (str.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2) {
         storage["tags" + i] = str.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2);
         str = str.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2, str.length);
@@ -114,7 +111,7 @@ function DisplayDounjishis(callback) {
 }
 
 function GetTagsCount() {
-    return Object.keys(g_tagsName).length;
+    return Object.keys(g_tagsCount).length;
 }
 
 class Doujinshi {

@@ -22,8 +22,29 @@ document.getElementById("help").addEventListener("click", function() {
 });
 
 document.getElementById("suggest").addEventListener("click", function() {
-    document.getElementById("suggestion").innerHTML = "Tags not loaded, please wait.<br/>If error persist, please check the 'Help' section.";
+    SuggestDoujinshi(0, "");
 });
+
+function SuggestDoujinshi(index, str) {
+    chrome.storage.sync.get(['tags' + index], function(elems) {
+        if (elems['tags' + index] === undefined) {
+            if (str === "") {
+                document.getElementById("suggestion").innerHTML = "Tags not loaded, please wait.<br/>If error persist, please check the 'Help' section.";
+            } else {
+                console.log(str);
+                let json = JSON.parse(str);
+                console.log(json);
+                let artists = {};
+                let characters = {};
+                let groups = {};
+                let parodies = {};
+                let tags = {};
+            }
+        } else {
+            SuggestDoujinshi(index + 1, str + elems['tags' + index]);
+        }
+    });
+}
 
 function LoadFavorites() {
     chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
