@@ -33,9 +33,9 @@ function LoadFavoritePage(pageNumber, doujinshis, callback) {
                 if (currDoujinshis.length > 0) {
                     LoadFavoritePage(pageNumber + 1, doujinshis.concat(currDoujinshis), callback);
                 } else {
-                    StoreDoujinshis(doujinshis.map(function(d) {
+                    StoreDoujinshis("[" + doujinshis.map(function(d) {
                         return JSON.stringify(d);
-                    }).toString());
+                    }).toString() + "]");
                     chrome.storage.sync.set({
                         doujinshiCount: doujinshis.length
                     })
@@ -50,9 +50,32 @@ function LoadFavoritePage(pageNumber, doujinshis, callback) {
     http.send();
 }
 
+function StoreTagPage(doujinshiId) {
+    let http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let tags = [];
+                JSON.parse(this.responseText).tags.forEach(function(elem) {
+                    tags.push(new Tag(elem.id, elem.name, elem.type));
+                });
+                let storage = {};
+                storage['tag' + doujinshiId] = "[" + tags.map(function(d) {
+                    return JSON.stringify(d);
+                }).toString() + "]";
+                chrome.storage.sync.set(storage);
+            } else {
+                console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
+            }
+        }
+    };
+    http.open("GET", "https://nhentai.net/api/gallery/" + doujinshiId, true);
+    http.send();
+}
+
 function StoreDoujinshis(doujinshis) {
     let i = 0;
-    let storage = {}; //(new TextEncoder().encode(doujinshis)).length
+    let storage = {};
     while (doujinshis.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2) {
         storage["doujinshi" + i] = doujinshis.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2);
         doujinshis = doujinshis.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2, doujinshis.length);
@@ -67,5 +90,13 @@ class Doujinshi {
         this.id = id;
         this.image = image;
         this.name = name;
+    }
+}
+
+class Tag {
+    constructor(id, name, category) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
     }
 }

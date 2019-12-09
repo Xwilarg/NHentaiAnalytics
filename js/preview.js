@@ -4,7 +4,7 @@ function GetNextDoujinshi(id, str) {
             GetNextDoujinshi(id + 1, str + elems['doujinshi' + id]);
         } else {
             let html = "";
-            JSON.parse("[" + str + "]").forEach(function(elem) {
+            JSON.parse(str).forEach(function(elem) {
                 html += '<a href="https://nhentai.net/g/' + elem.id + '/" target="_blank">' + elem.name + '</a><br/>'
                 html += '<img src="' + elem.image + '"/>';
                 html += '<br/><br/>';
