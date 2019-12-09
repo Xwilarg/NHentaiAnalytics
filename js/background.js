@@ -83,6 +83,8 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                     });
                     if (index + 1 !== g_doujinshis.length) {
                         StoreTags(index + 1);
+                    } else {
+                        StoreTagsName();
                     }
                 } else {
                     console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
