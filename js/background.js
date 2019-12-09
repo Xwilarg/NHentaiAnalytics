@@ -35,7 +35,11 @@ function LoadFavoritePage(pageNumber, callback) {
                 do {
                     match = matchs.exec(this.responseText);
                     if (match !== null) {
-                        currDoujinshis.push(new Doujinshi(match[1], match[2], match[3]));
+                        let image = match[2];
+                        if (image.startsWith("//")) {
+                            image = "https:" + image;
+                        }
+                        currDoujinshis.push(new Doujinshi(match[1], image, match[3]));
                     }
                 } while (match);
                 g_doujinshis = g_doujinshis.concat(currDoujinshis);

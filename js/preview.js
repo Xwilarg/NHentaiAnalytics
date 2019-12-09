@@ -1,7 +1,7 @@
 function DisplayDounjishis() {
     chrome.extension.getBackgroundPage().DisplayDounjishis(function(doujinshis) {
         if (doujinshis.length == 0) {
-            document.getElementById("preview").innerHTML = "You must be logged in NHentai.";
+            document.getElementById("preview").innerHTML = "Please log in NHentai and reload the page.";
             return;
         }
         let html = "";
