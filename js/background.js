@@ -72,15 +72,18 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                     JSON.parse(this.responseText).tags.forEach(function(elem) {
                         let tag = new Tag(elem.id, elem.name, elem.type);
                         g_tagsPerDoujinshi[id].push(tag);
-                        if (!g_tagsName.includes(elem.id)) {
+                        if (g_tagsName[elem.id] === undefined) {
                             g_tagsName[elem.id] = tag;
                         }
-                        if (!g_tagsCount.includes(elem.id)) {
+                        if (g_tagsCount[elem.id] === undefined) {
                             g_tagsCount[elem.id] = 1;
                         } else {
                             g_tagsCount[elem.id]++;
                         }
                     });
+                    if (index + 1 !== g_doujinshis.length) {
+                        StoreTags(index + 1);
+                    }
                 } else {
                     console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
                 }
@@ -91,7 +94,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
     }, 500);
 }
 
-function StoreTags() {
+function StoreTagsName() {
     let i = 0;
     let storage = {};
     let str = JSON.stringify(g_tagsName);
@@ -106,6 +109,10 @@ function StoreTags() {
 
 function DisplayDounjishis(callback) {
     callback(g_doujinshis);
+}
+
+function GetTagsCount() {
+    return Object.keys(g_tagsName).length;
 }
 
 class Doujinshi {
