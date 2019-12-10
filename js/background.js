@@ -1,6 +1,7 @@
 let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsPerDoujinshi = {}; // Tags for each doujinshi
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
+let g_suggestedDoujinshi = undefined;
 
 function LoadFavorites(callback) {
     let http = new XMLHttpRequest();
@@ -29,18 +30,7 @@ function LoadFavoritePage(pageNumber, callback) {
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                let currDoujinshis = [];
-                let matchs = /<a href="\/g\/([0-9]+)\/".+img src="([^"]+)".+<div class="caption">([^<]+)<\/div>/g; // Get all doujinshis
-                do {
-                    match = matchs.exec(this.responseText);
-                    if (match !== null) {
-                        let image = match[2];
-                        if (image.startsWith("//")) {
-                            image = "https:" + image;
-                        }
-                        currDoujinshis.push(new Doujinshi(match[1], image, match[3]));
-                    }
-                } while (match);
+                let currDoujinshis = GetDoujinshisFromHtml(this.responseText);
                 g_doujinshis = g_doujinshis.concat(currDoujinshis);
                 if (currDoujinshis.length > 0) {
                     LoadFavoritePage(pageNumber + 1, callback);
@@ -57,6 +47,38 @@ function LoadFavoritePage(pageNumber, callback) {
         }
     };
     http.open("GET", "https://nhentai.net/favorites/?page=" + pageNumber, true);
+    http.send();
+}
+
+function GetDoujinshisFromHtml(html) {
+    let currDoujinshis = [];
+    let matchs = /<a href="\/g\/([0-9]+)\/".+img src="([^"]+)".+<div class="caption">([^<]+)<\/div>/g; // Get all doujinshis
+    do {
+        match = matchs.exec(html);
+        if (match !== null) {
+            let image = match[2];
+            if (image.startsWith("//")) {
+                image = "https:" + image;
+            }
+            currDoujinshis.push(new Doujinshi(match[1], image, match[3]));
+        }
+    } while (match);
+    return currDoujinshis;
+}
+
+function GetRandomDoujinshiFromPage(url, callback) {
+    let http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let doujinshis = GetDoujinshisFromHtml(this.responseText);
+                callback(doujinshis[Math.floor(Math.random() * doujinshis.length)]);
+            } else {
+                console.error("Error while loading page " + url + " (Code " + this.status + ").");
+            }
+        }
+    };
+    http.open("GET", url, true);
     http.send();
 }
 

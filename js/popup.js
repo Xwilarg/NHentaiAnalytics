@@ -48,7 +48,7 @@ function SuggestDoujinshi(index, str) {
                 for (const [key, value] of Object.entries(json)) {
                     let splitKey = key.split('/');
                     let categoryName = splitKey[0];
-                    let tagName = splitKey[1];
+                    let tagName = splitKey[1].replace(new RegExp(' ', 'g'), '+');
                     if (categoryName == "artist") artists[tagName] = value.value;
                     else if (categoryName == "character") characters[tagName] = value.value;
                     else if (categoryName == "group") groups[tagName] = value.value;
@@ -64,9 +64,13 @@ function SuggestDoujinshi(index, str) {
                 items.sort(function(first, second) {
                     return second[1] - first[1];
                 });
-                console.log("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
+                chrome.extension.getBackgroundPage().GetRandomDoujinshiFromPage("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
                     return e[0];
-                }).join('+'));
+                }).join('+'), function(doujinshi) {
+                    document.getElementById("suggestion").innerHTML =
+                    '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>' +
+                    '<img src="' + doujinshi.image + '"/><br/>';
+                });
             }
         } else {
             SuggestDoujinshi(index + 1, str + elems['tags' + index]);
@@ -89,3 +93,11 @@ document.getElementById("tagCount").innerHTML = chrome.extension.getBackgroundPa
 chrome.storage.sync.get(['tags0'], function(elems) {
     document.getElementById("savedTagCount").innerHTML = "Tags state: " + (elems.tags0 !== undefined ? "Loaded" : "Not Loaded");
 });
+
+class Doujinshi {
+    constructor(id, image, name) {
+        this.id = id;
+        this.image = image;
+        this.name = name;
+    }
+}

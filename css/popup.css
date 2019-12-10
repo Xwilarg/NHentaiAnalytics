@@ -14,3 +14,7 @@ button:hover {
     cursor: pointer;
     background-color: lightblue;
 }
+
+img {
+    width: 180px;
+}
