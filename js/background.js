@@ -78,12 +78,31 @@ function GetRandomDoujinshiFromPage(url, callback) {
                 let doujinshis = GetDoujinshisFromHtml(this.responseText);
                 g_suggestedDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
                 callback(g_suggestedDoujinshi);
+                CheckDoujinshiValid(g_suggestedDoujinshi);
             } else {
                 console.error("Error while loading page " + url + " (Code " + this.status + ").");
             }
         }
     };
     http.open("GET", url, true);
+    http.send();
+}
+
+/// Check if a doujinshi contains the right tags
+function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
+    let http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                LoadTagsInternal(0, "", function() {
+
+                });
+            } else {
+                console.error("Error while loading page " + url + " (Code " + this.status + ").");
+            }
+        }
+    };
+    http.open("GET", "https://nhentai.net/api/gallery/" +  + doujinshi.id, true);
     http.send();
 }
 
@@ -121,6 +140,17 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
     }, 500);
 }
 
+function LoadTagsInternal(index, str, callback) {
+    chrome.storage.sync.get(['tags' + index], function(elems) {
+        if (elems['tags' + index] === undefined) {
+            g_tagsCount = JSON.parse(str);
+            callback();
+        } else {
+            LoadTagsInternal(index + 1, str + elems['tags' + index], callback);
+        }
+    });
+}
+
 /// Store tags into storage, making sure it doesn't mess with QUOTA_BYTES_PER_ITEM
 function StoreTagsName() {
     let i = 0;
@@ -141,6 +171,12 @@ function DisplayDounjishis(callback) {
 
 function GetTagsCount() {
     return Object.keys(g_tagsCount).length;
+}
+
+function GetTags(callback) {
+    LoadTagsInternal(0, "", function() {
+        callback(g_tagsCount);
+    });
 }
 
 function GetSuggestion() {
