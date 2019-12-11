@@ -59,7 +59,7 @@ function SuggestDoujinshi() {
         items.sort(function(first, second) {
             return second[1] - first[1];
         });
-        chrome.extension.getBackgroundPage().GetRandomDoujinshiFromPage("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
+        chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
             return e[0];
         }).join('+'), function(doujinshi) {
             document.getElementById("suggestion").innerHTML =

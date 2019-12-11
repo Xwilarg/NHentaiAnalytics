@@ -69,6 +69,23 @@ function GetDoujinshisFromHtml(html) {
     return currDoujinshis;
 }
 
+function GetRandomDoujinshi(url, callback) {
+    let http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let match = /<a href="\?q=[^&]+&amp;page=([0-9]+)" class="last">/.exec(this.responseText);
+                let maxPage = parseInt(match[1]);
+                GetRandomDoujinshiFromPage(url + "&page=" + (Math.floor(Math.random() * maxPage) + 1), callback);
+            } else {
+                console.error("Error while loading page " + url + " (Code " + this.status + ").");
+            }
+        }
+    };
+    http.open("GET", url, true);
+    http.send();
+}
+
 /// Get a random doujinshi from a page
 function GetRandomDoujinshiFromPage(url, callback) {
     let http = new XMLHttpRequest();
