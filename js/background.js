@@ -3,6 +3,7 @@ let g_tagsPerDoujinshi = {}; // Tags for each doujinshi
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
 let g_suggestedDoujinshi = undefined;
 
+/// Load favorites into storage
 function LoadFavorites(callback) {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
@@ -25,6 +26,7 @@ function LoadFavorites(callback) {
     http.send();
 }
 
+/// Load one page of favorite into storage
 function LoadFavoritePage(pageNumber, callback) {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
@@ -50,6 +52,7 @@ function LoadFavoritePage(pageNumber, callback) {
     http.send();
 }
 
+/// Get all doujinshis that are in a page, return an array of Doujinshi
 function GetDoujinshisFromHtml(html) {
     let currDoujinshis = [];
     let matchs = /<a href="\/g\/([0-9]+)\/".+img src="([^"]+)".+<div class="caption">([^<]+)<\/div>/g; // Get all doujinshis
@@ -66,13 +69,15 @@ function GetDoujinshisFromHtml(html) {
     return currDoujinshis;
 }
 
+/// Get a random doujinshi from a page
 function GetRandomDoujinshiFromPage(url, callback) {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let doujinshis = GetDoujinshisFromHtml(this.responseText);
-                callback(doujinshis[Math.floor(Math.random() * doujinshis.length)]);
+                g_suggestedDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
+                callback(g_suggestedDoujinshi);
             } else {
                 console.error("Error while loading page " + url + " (Code " + this.status + ").");
             }
@@ -82,6 +87,7 @@ function GetRandomDoujinshiFromPage(url, callback) {
     http.send();
 }
 
+/// Check all doujinshi and get their tags to store them
 function StoreTags(index) { // We wait 500 ms before checking each page so the API doesn't return a 50X error
     setTimeout(function() {
         let id = g_doujinshis[index].id;
@@ -115,6 +121,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
     }, 500);
 }
 
+/// Store tags into storage, making sure it doesn't mess with QUOTA_BYTES_PER_ITEM
 function StoreTagsName() {
     let i = 0;
     let storage = {};
@@ -134,6 +141,10 @@ function DisplayDounjishis(callback) {
 
 function GetTagsCount() {
     return Object.keys(g_tagsCount).length;
+}
+
+function GetSuggestion() {
+    return g_suggestedDoujinshi;
 }
 
 class Doujinshi {
