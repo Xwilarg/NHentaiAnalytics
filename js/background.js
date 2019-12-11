@@ -76,9 +76,23 @@ function GetRandomDoujinshiFromPage(url, callback) {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let doujinshis = GetDoujinshisFromHtml(this.responseText);
-                g_suggestedDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
-                callback(g_suggestedDoujinshi);
-                CheckDoujinshiValid(g_suggestedDoujinshi);
+                let currDoujinshi = undefined;
+                let i = 0;
+                while (i < 10 && currDoujinshi === undefined) {
+                    currDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
+                    CheckDoujinshiValid(currDoujinshi, function() {
+                        g_suggestedDoujinshi = currDoujinshi;
+                        callback(g_suggestedDoujinshi);
+                    }, function() {
+                        currDoujinshi = undefined;
+                    });
+                }
+                if (currDoujinshi === undefined) {
+                    console.error("Not found");
+                } else {
+                    g_suggestedDoujinshi = currDoujinshi;
+                    callback(g_suggestedDoujinshi);
+                }
             } else {
                 console.error("Error while loading page " + url + " (Code " + this.status + ").");
             }
@@ -95,10 +109,21 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 LoadTagsInternal(0, "", function() {
-
+                    let isError = false;
+                    JSON.parse(http.responseText).tags.forEach(function(elem) {
+                        if (elem.type == "tag" && !Object.keys(g_tagsCount).includes(elem.type + '/' + elem.name))
+                        {
+                            callbackFailure();
+                            isError = true;
+                            return;
+                        }
+                    });
+                    if (!isError) {
+                        callbackSuccess();
+                    }
                 });
             } else {
-                console.error("Error while loading page " + url + " (Code " + this.status + ").");
+                console.error("Error while loading doujinshi " + doujinshi.id + " (Code " + this.status + ").");
             }
         }
     };
