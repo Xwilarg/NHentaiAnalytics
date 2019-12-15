@@ -22,8 +22,12 @@ document.getElementById("suggest").addEventListener("click", function() {
 });
 
 function SuggestDoujinshi() {
-    chrome.storage.sync.get(['tags0'], function(elems) {
-        if (elems.tags0 === undefined) {
+    chrome.storage.sync.get({
+        tags0: "",
+        tagsPerSearch: 3,
+        favoriteTags: 5
+    }, function(elems) {
+        if (elems.tags0 === undefined || elems.tags0 === "") {
             document.getElementById("suggestion").innerHTML = "Tags are being loaded, please retry later...";
         } else {
             chrome.extension.getBackgroundPage().GetTags(function(obj) {
@@ -59,13 +63,13 @@ function SuggestDoujinshi() {
                 items.sort(function(first, second) {
                     return second[1] - first[1];
                 });
-                if (Object.keys(items).length > 5) {
-                    items = items.slice(0, 5);
+                if (Object.keys(items).length > elems.favoriteTags) {
+                    items = items.slice(0, elems.favoriteTags);
                 } else {
                     items = items;
                 }
                 let selectedTags = [];
-                while (items.length > 0 && selectedTags.length < 3) {
+                while (items.length > 0 && selectedTags < elems.tagsPerSearch) {
                     let index = Math.floor(Math.random() * items.length);
                     selectedTags.push(items[index][0]);
                     items.splice(index, 1);
