@@ -5,9 +5,16 @@ html {
 button {
     border: none;
     background-color: white;
-    width: 202px;
     height: 50px;
     margin-left: -10px;
+}
+
+.fullLength {
+    width: 202px;
+}
+
+.midLength {
+    width: 100px;
 }
 
 button:hover {
