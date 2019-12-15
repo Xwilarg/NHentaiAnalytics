@@ -47,7 +47,7 @@ tagsPerSearch.addEventListener('change', function() {
         tagsPerSearch: 3,
         favoriteTags: 5
     }, function(elems) {
-        if (!isNaN(value) && value > 1 && value < elems.favoriteTags) {
+        if (!isNaN(value) && value > 1 && value <= elems.favoriteTags) {
             chrome.storage.sync.set({
                 tagsPerSearch: value
             });
@@ -63,7 +63,7 @@ favoriteTags.addEventListener('change', function() {
         tagsPerSearch: 3,
         favoriteTags: 5
     }, function(elems) {
-        if (!isNaN(value) && value > 1 && value < elems.tagsPerSearch) {
+        if (!isNaN(value) && value > 1 && value >= elems.tagsPerSearch) {
             chrome.storage.sync.set({
                 favoriteTags: value
             });
