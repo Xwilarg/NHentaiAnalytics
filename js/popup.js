@@ -62,9 +62,7 @@ function SuggestDoujinshi() {
         chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
             return e[0];
         }).join('+'), function(doujinshi) {
-            document.getElementById("suggestion").innerHTML =
-            '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>' +
-            '<img src="' + doujinshi.image + '"/><br/>';
+            SuggestionToHtml(doujinshi);
         });
     });
 }
@@ -72,10 +70,22 @@ function SuggestDoujinshi() {
 function GetSuggestion() {
     let doujinshi = chrome.extension.getBackgroundPage().GetSuggestion();
     if (doujinshi !== undefined) {
-        document.getElementById("suggestion").innerHTML =
-            '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>' +
-            '<img src="' + doujinshi.image + '"/><br/>';
+        SuggestionToHtml(doujinshi);
     }
+}
+
+function SuggestionToHtml(doujinshi) {
+    let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
+    chrome.storage.sync.get({
+        previewImage: "show"
+    }, function(elems) {
+        if (elems.previewImage === "show") {
+            html += '<img src="' + doujinshi.image + '"/><br/>';
+        } else if (elems.previewImage === "blur") {
+            html += '<img class="blur" src="' + doujinshi.image + '"/><br/>';
+        }
+        document.getElementById("suggestion").innerHTML = html;
+    });
 }
 
 function LoadFavorites() {

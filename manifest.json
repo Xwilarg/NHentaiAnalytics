@@ -14,5 +14,9 @@
     "background": {
       "scripts": ["js/background.js"]
     },
+    "options_ui": {
+      "page": "settings.html",
+      "open_in_tab": false
+    },
     "manifest_version": 2
 }

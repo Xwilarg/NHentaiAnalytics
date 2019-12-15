@@ -18,3 +18,21 @@ chrome.storage.sync.get({
         document.getElementById("nbDoujinshi").innerHTML = elems.doujinshiCount + " doujinshis loaded.";
     }
 });
+
+chrome.storage.sync.get({
+    previewImage: "show"
+}, function(elems) {
+    var select = document.getElementById('previewImage');
+    for (var i, j = 0; i = select.options[j]; j++) {
+        if (i.value == elems.previewImage) {
+            select.selectedIndex = j;
+            break;
+        }
+    }
+});
+
+previewImage.addEventListener('change', function() {
+    chrome.storage.sync.set({
+        previewImage: this.options[this.selectedIndex].value
+    });
+});
