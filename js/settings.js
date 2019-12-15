@@ -10,19 +10,26 @@ document.getElementById("update").addEventListener("click", function() {
     })
 });
 
+document.getElementById("default").addEventListener("click", function() {
+    document.getElementById("tagsPerSearch").value = 3;
+    document.getElementById("favoriteTags").value = 5;
+    chrome.storage.sync.set({
+        tagsPerSearch: 3,
+        favoriteTags: 5
+    });
+});
+
 chrome.storage.sync.get({
-    doujinshiCount: 0
+    doujinshiCount: 0,
+    previewImage: "show",
+    tagsPerSearch: 3,
+    favoriteTags: 5
 }, function(elems) {
     if (elems.doujinshiCount == -1) { // Update in progress...
         document.getElementById("nbDoujinshi").innerHTML = "0 doujinshis loaded.";
     } else {
         document.getElementById("nbDoujinshi").innerHTML = elems.doujinshiCount + " doujinshis loaded.";
     }
-});
-
-chrome.storage.sync.get({
-    previewImage: "show"
-}, function(elems) {
     var select = document.getElementById('previewImage');
     for (var i, j = 0; i = select.options[j]; j++) {
         if (i.value == elems.previewImage) {
@@ -30,6 +37,40 @@ chrome.storage.sync.get({
             break;
         }
     }
+    document.getElementById("tagsPerSearch").value = elems.tagsPerSearch;
+    document.getElementById("favoriteTags").value = elems.favoriteTags;
+});
+
+tagsPerSearch.addEventListener('change', function() {
+    let value = parseInt(document.getElementById("tagsPerSearch").value);
+    chrome.storage.sync.get({
+        tagsPerSearch: 3,
+        favoriteTags: 5
+    }, function(elems) {
+        if (!isNaN(value) && value > 1 && value < elems.favoriteTags) {
+            chrome.storage.sync.set({
+                tagsPerSearch: value
+            });
+        } else {
+            document.getElementById("tagsPerSearch").value = elems.tagsPerSearch;
+        }
+    });
+});
+
+favoriteTags.addEventListener('change', function() {
+    let value = parseInt(document.getElementById("favoriteTags").value);
+    chrome.storage.sync.get({
+        tagsPerSearch: 3,
+        favoriteTags: 5
+    }, function(elems) {
+        if (!isNaN(value) && value > 1 && value < elems.tagsPerSearch) {
+            chrome.storage.sync.set({
+                favoriteTags: value
+            });
+        } else {
+            document.getElementById("favoriteTags").value = elems.favoriteTags;
+        }
+    });
 });
 
 previewImage.addEventListener('change', function() {

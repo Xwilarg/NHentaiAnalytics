@@ -10,6 +10,17 @@
             <option value="blur">Blur</option>
             <option value="dont">Don't display</option>
         </select>
+        <hr/>
+        Search options: (If you're not sure what you're doing, avoid modifying these)<br/>
+        Number of tags per search: <input id="tagsPerSearch" type="number"/><br/>
+        Number of favorite tags: <input id="favoriteTags" type="number"/><br/>
+        <button id="default">Restore default</button><br/>
+        <br/>
+        Explanations:<br/>
+        The extension take all the tags from your favorites doujinshi and order them in descending order.<br/>
+        Then it takes X tags from the top of the list, these tags are considered as your favorite tags.<br/>
+        From these X tags, it then take Y random tags and do a search with them.<br/>
+        After that it just take a random doujinshi and show it to you.
     </body>
     <script src="js/settings.js"></script>
 </html>
