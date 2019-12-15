@@ -59,9 +59,18 @@ function SuggestDoujinshi() {
                 items.sort(function(first, second) {
                     return second[1] - first[1];
                 });
-                chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
-                    return e[0];
-                }).join('+'), function(doujinshi) {
+                if (Object.keys(items).length > 5) {
+                    items = items.slice(0, 5);
+                } else {
+                    items = items;
+                }
+                let selectedTags = [];
+                while (items.length > 0 && selectedTags.length < 3) {
+                    let index = Math.floor(Math.random() * items.length);
+                    selectedTags.push(items[index][0]);
+                    items.splice(index, 1);
+                }
+                chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + selectedTags.join('+'), function(doujinshi) {
                     SuggestionToHtml(doujinshi);
                 });
             });
