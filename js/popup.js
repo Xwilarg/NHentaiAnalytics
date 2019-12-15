@@ -1,7 +1,6 @@
 chrome.storage.sync.get({
     doujinshiCount: 0
 }, function(elems) {
-    console.log(elems.doujinshiCount);
     if (elems.doujinshiCount == -1) { // Update in progress...
     } else if (elems.doujinshiCount == 0) {
         LoadFavorites();
@@ -104,7 +103,7 @@ function LoadFavorites() {
 document.getElementById("tagCount").innerHTML = chrome.extension.getBackgroundPage().GetTagsCount() + " tags loaded.";
 
 chrome.storage.sync.get(['tags0'], function(elems) {
-    document.getElementById("savedTagCount").innerHTML = "Tags state: " + (elems.tags0 !== undefined ? "Loaded" : "Not Loaded");
+    document.getElementById("savedTagCount").innerHTML = "Tags state: " + (elems.tags0 !== undefined && elems.tags0 !== "" ? "Loaded" : "Not Loaded");
 });
 
 GetSuggestion();

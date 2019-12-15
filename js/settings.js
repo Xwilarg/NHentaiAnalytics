@@ -1,12 +1,13 @@
 document.getElementById("update").addEventListener("click", function() {
     document.getElementById("nbDoujinshi").innerHTML = "Loading...";
-    chrome.storage.sync.clear();
-    chrome.storage.sync.set({
-        doujinshiCount: -1
-    });
-    chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
-        document.getElementById("nbDoujinshi").innerHTML = nb + " doujinshis loaded.";
-    });
+    CleanTagsInternal(0, function() {
+        chrome.storage.sync.set({
+            doujinshiCount: -1
+        });
+        chrome.extension.getBackgroundPage().LoadFavorites(function(nb) {
+            document.getElementById("nbDoujinshi").innerHTML = nb + " doujinshis loaded.";
+        });
+    })
 });
 
 chrome.storage.sync.get({
@@ -36,3 +37,16 @@ previewImage.addEventListener('change', function() {
         previewImage: this.options[this.selectedIndex].value
     });
 });
+
+function CleanTagsInternal(index, callback) {
+    chrome.storage.sync.get(['tags' + index], function(elems) {
+        if (elems['tags' + index] === undefined) {
+            callback();
+        } else {
+            let storage = {};
+            storage["tags" + index] = "";
+            chrome.storage.sync.set(storage);
+            CleanTagsInternal(index + 1, callback);
+        }
+    });
+}
