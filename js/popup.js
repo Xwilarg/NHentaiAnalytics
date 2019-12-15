@@ -23,44 +23,50 @@ document.getElementById("suggest").addEventListener("click", function() {
 });
 
 function SuggestDoujinshi() {
-    chrome.extension.getBackgroundPage().GetTags(function(obj) {
-        let json = Object.keys(obj).reduce((res, key) => {
-            res[key] = {
-                value: obj[key]
-            };
-            return res;
-        }, {});
-        let artists = {};
-        let characters = {};
-        let groups = {};
-        let parodies = {};
-        let tags = {};
-        let categories = {};
-        let languages = {};
-        for (const [key, value] of Object.entries(json)) {
-            let splitKey = key.split('/');
-            let categoryName = splitKey[0];
-            let tagName = splitKey[1].replace(new RegExp(' ', 'g'), '+');
-            if (categoryName == "artist") artists[tagName] = value.value;
-            else if (categoryName == "character") characters[tagName] = value.value;
-            else if (categoryName == "group") groups[tagName] = value.value;
-            else if (categoryName == "parody") parodies[tagName] = value.value;
-            else if (categoryName == "tag") tags[tagName] = value.value;
-            else if (categoryName == "category") categories[tagName] = value.value;
-            else if (categoryName == "language") languages[tagName] = value.value;
-            else console.error("Invalid category " + categoryName);
+    chrome.storage.sync.get(['tags0'], function(elems) {
+        if (elems.tags0 === undefined) {
+            document.getElementById("suggestion").innerHTML = "Tags are being loaded, please retry later...";
+        } else {
+            chrome.extension.getBackgroundPage().GetTags(function(obj) {
+                let json = Object.keys(obj).reduce((res, key) => {
+                    res[key] = {
+                        value: obj[key]
+                    };
+                    return res;
+                }, {});
+                let artists = {};
+                let characters = {};
+                let groups = {};
+                let parodies = {};
+                let tags = {};
+                let categories = {};
+                let languages = {};
+                for (const [key, value] of Object.entries(json)) {
+                    let splitKey = key.split('/');
+                    let categoryName = splitKey[0];
+                    let tagName = splitKey[1].replace(new RegExp(' ', 'g'), '+');
+                    if (categoryName == "artist") artists[tagName] = value.value;
+                    else if (categoryName == "character") characters[tagName] = value.value;
+                    else if (categoryName == "group") groups[tagName] = value.value;
+                    else if (categoryName == "parody") parodies[tagName] = value.value;
+                    else if (categoryName == "tag") tags[tagName] = value.value;
+                    else if (categoryName == "category") categories[tagName] = value.value;
+                    else if (categoryName == "language") languages[tagName] = value.value;
+                    else console.error("Invalid category " + categoryName);
+                }
+                let items = Object.keys(tags).map(function(key) {
+                    return [key, tags[key]];
+                });
+                items.sort(function(first, second) {
+                    return second[1] - first[1];
+                });
+                chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
+                    return e[0];
+                }).join('+'), function(doujinshi) {
+                    SuggestionToHtml(doujinshi);
+                });
+            });
         }
-        let items = Object.keys(tags).map(function(key) {
-            return [key, tags[key]];
-        });
-        items.sort(function(first, second) {
-            return second[1] - first[1];
-        });
-        chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + items.slice(0, 3).map(function(e) {
-            return e[0];
-        }).join('+'), function(doujinshi) {
-            SuggestionToHtml(doujinshi);
-        });
     });
 }
 
