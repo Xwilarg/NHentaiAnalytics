@@ -1,18 +1,21 @@
 let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
 let g_blacklistTags = [];
+let g_doujinshiDebug = {};
 let g_suggestedDoujinshi = undefined;
 var loadingCallback = undefined;
 var doujinshiCallback = undefined;
 var settingsDoujinshiCallback = undefined;
+var settingsDebugCallback = undefined;
 
 function SetLoadingCallback(callbackTags, callbackDoujinshi) {
     loadingCallback = callbackTags;
     doujinshiCallback = callbackDoujinshi;
 }
 
-function SetSettingsCallback(callbackDoujinshi) {
+function SetSettingsCallback(callbackDoujinshi, callbackDebug) {
     settingsDoujinshiCallback = callbackDoujinshi;
+    settingsDebugCallback = callbackDebug;
 }
 
 function CheckForUpdates() {
@@ -29,6 +32,7 @@ function CheckForUpdates() {
                         if (doujinshiCount !== elems.doujinshiCount) {
                             g_doujinshis = [];
                             g_tagsCount = {};
+                            g_doujinshiDebug = {};
                             LoadBlacklistedTags(this.responseText);
                             LoadFavoritePage(1);
                         }
@@ -54,6 +58,7 @@ function LoadFavorites() {
                 } else {
                     g_doujinshis = [];
                     g_tagsCount = {};
+                    g_doujinshiDebug = {};
                     chrome.storage.sync.set({
                         doujinshiCount: -1
                     });
@@ -217,10 +222,17 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                             let tagId = elem.type + "/" + elem.name;
                             if (g_tagsCount[tagId] === undefined) {
                                 g_tagsCount[tagId] = 1;
+                                g_doujinshiDebug[tag.id] = [tag, g_doujinshis[index]];
                             } else {
                                 g_tagsCount[tagId]++;
+                                if (!g_doujinshiDebug[tag.id].includes(g_doujinshis[index])) {
+                                    g_doujinshiDebug[tag.id].push(g_doujinshis[index]);
+                                }
                             }
                         });
+                        if (settingsDebugCallback !== undefined) {
+                            settingsDebugCallback(g_doujinshiDebug);
+                        }
                         if (loadingCallback !== undefined) {
                             loadingCallback(GetTagsCount());
                         }
@@ -294,6 +306,10 @@ function GetTags(callback) {
 
 function GetSuggestion() {
     return g_suggestedDoujinshi;
+}
+
+function GetDoujinshiDebug() {
+    return g_doujinshiDebug;
 }
 
 class Doujinshi {

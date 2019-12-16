@@ -15,9 +15,30 @@ document.getElementById("default").addEventListener("click", function() {
     });
 });
 
+function SetDebugLogs(doujinshis) {
+    let html = "";
+    let items = Object.keys(doujinshis).map(function(key) {
+        return [key, doujinshis[key]];
+    });
+    items.sort(function(first, second) {
+        if (first[1][0].name < second[1][0].name) {
+            return -1;
+        }
+        return 1;
+    });
+    items.forEach(function(elem) {
+        html += "<button id='" + elem[0] + "'>" + elem[1][0].name + "</button>";
+    });
+    document.getElementById("tagsDisplay").innerHTML = html;
+}
+
+SetDebugLogs(chrome.extension.getBackgroundPage().GetDoujinshiDebug());
+
 chrome.extension.getBackgroundPage().SetSettingsCallback(function(nb) {
     document.getElementById("nbDoujinshi").innerHTML = nb + " doujinshis loaded.";
     UpdateLogs();
+}, function(doujinshis) {
+    SetDebugLogs(doujinshis);
 });
 
 chrome.storage.sync.get({
