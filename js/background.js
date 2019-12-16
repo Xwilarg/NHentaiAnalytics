@@ -163,15 +163,19 @@ function GetRandomDoujinshiFromPage(url, callback) {
 function GetRandomDoujinshiFromList(doujinshis, nbTries, callback) {
     currDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
     CheckDoujinshiValid(currDoujinshi, function() {
-        console.log("Success");
         g_suggestedDoujinshi = currDoujinshi;
         callback(g_suggestedDoujinshi);
     }, function() {
-        console.log("Errpr");
         if (nbTries == 9) {
-            console.error("Not found");
+            callback(undefined);
         } else {
-            GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback);
+            chrome.storage.sync.get({
+                requestsDelay: 500
+            }, function(elems) {
+                setTimeout(function() {
+                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback);
+                }, elems.requestsDelay);
+            });
         }
     });
 }
@@ -187,17 +191,14 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
                     let httpTags = JSON.parse(http.responseText).tags;
                     for (let i = 0; i < httpTags.length; i++) {
                         let elem = httpTags[i];
-                        console.log(elem);
                         if (elem.type == "tag" && !Object.keys(tags).includes('tag/' + elem.name))
                         {
-                            console.log("Failure callback");
                             callbackFailure();
                             isError = true;
                             return;
                         }
                     }
                     if (!isError) {
-                        console.log("Success callback");
                         callbackSuccess();
                     }
                 });
@@ -212,14 +213,18 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
 
 /// Check all doujinshi and get their tags to store them
 function StoreTags(index) { // We wait 500 ms before checking each page so the API doesn't return a 50X error
-    chrome.storage.sync.get(['requestsDelay'], function(elems) {
+    chrome.storage.sync.get({
+        requestsDelay: 500
+    }, function(elems) {
         setTimeout(function() {
             let id = g_doujinshis[index].id;
             let http = new XMLHttpRequest();
             http.onreadystatechange = function() {
                 if (this.readyState === 4) {
                     if (this.status === 200) {
-                        JSON.parse(this.responseText).tags.forEach(function(elem) {
+                        let httpTags = JSON.parse(this.responseText).tags;
+                        for (let i = 0; i < httpTags.length; i++) {
+                            let elem = httpTags[i];
                             if (g_blacklistTags.includes(elem.id)) { // Ignore tags that were blacklisted
                                 return;
                             }
@@ -234,7 +239,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                                     g_doujinshiDebug[tag.id].push(g_doujinshis[index]);
                                 }
                             }
-                        });
+                        }
                         if (settingsDebugCallback !== undefined) {
                             settingsDebugCallback(g_doujinshiDebug);
                         }

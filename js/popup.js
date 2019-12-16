@@ -101,17 +101,21 @@ function GetSuggestion() {
 }
 
 function SuggestionToHtml(doujinshi) {
-    let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
-    chrome.storage.sync.get({
-        previewImage: "show"
-    }, function(elems) {
-        if (elems.previewImage === "show") {
-            html += '<img src="' + doujinshi.image + '"/><br/>';
-        } else if (elems.previewImage === "blur") {
-            html += '<img class="blur" src="' + doujinshi.image + '"/><br/>';
-        }
-        document.getElementById("suggestion").innerHTML = html;
-    });
+    if (doujinshi === undefined) {
+        document.getElementById("suggestion").innerHTML = "Doujinshi not found...";
+    } else {
+        let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
+        chrome.storage.sync.get({
+            previewImage: "show"
+        }, function(elems) {
+            if (elems.previewImage === "show") {
+                html += '<img src="' + doujinshi.image + '"/><br/>';
+            } else if (elems.previewImage === "blur") {
+                html += '<img class="blur" src="' + doujinshi.image + '"/><br/>';
+            }
+            document.getElementById("suggestion").innerHTML = html;
+        });
+    }
 }
 
 function LoadFavorites() {
