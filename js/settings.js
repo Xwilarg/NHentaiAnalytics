@@ -17,6 +17,7 @@ document.getElementById("default").addEventListener("click", function() {
 
 chrome.extension.getBackgroundPage().SetSettingsCallback(function(nb) {
     document.getElementById("nbDoujinshi").innerHTML = nb + " doujinshis loaded.";
+    UpdateLogs();
 });
 
 chrome.storage.sync.get({
@@ -41,7 +42,41 @@ chrome.storage.sync.get({
     document.getElementById("tagsPerSearch").value = elems.tagsPerSearch;
     document.getElementById("favoriteTags").value = elems.favoriteTags;
     document.getElementById("requestsDelay").value = elems.requestsDelay;
+
+    UpdateLogs();
 });
+
+function UpdateLogs() {
+    chrome.storage.sync.get({
+        doujinshiCount: 0,
+        tagsPerSearch: 3,
+        favoriteTags: 5,
+        requestsDelay: 500
+    }, function(elems) {
+        let logsHtml = "Browser: ";
+        if (typeof browser !== "undefined") {
+            logsHtml += "Firefox v" + Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo).version;
+        } else {
+            logsHtml += "Chrome v" + /Chrome\/([0-9.]+)/.exec(navigator.userAgent)[1];
+        }
+        logsHtml += "\nTags per Search: " + elems.tagsPerSearch;
+        logsHtml += "\nFavorite Tags: " + elems.favoriteTags;
+        logsHtml += "\nRequests Delay: " + elems.requestsDelay;
+        logsHtml += "\nDoujinshi Count: " + elems.doujinshiCount;
+        document.getElementById("logs").value = logsHtml;
+        chrome.extension.getBackgroundPage().GetTags(function(tags) {
+            logsHtml += "\nTags:\n";
+            let items = Object.keys(tags).map(function(key) {
+                return [key, tags[key]];
+            });
+            items.sort(function(first, second) {
+                return second[1] - first[1];
+            });
+            logsHtml += JSON.stringify(items);
+            document.getElementById("logs").value = logsHtml;
+        });
+    });
+}
 
 tagsPerSearch.addEventListener('change', function() {
     let value = parseInt(document.getElementById("tagsPerSearch").value);
@@ -53,6 +88,7 @@ tagsPerSearch.addEventListener('change', function() {
             chrome.storage.sync.set({
                 tagsPerSearch: value
             });
+            UpdateLogs();
         } else {
             document.getElementById("tagsPerSearch").value = elems.tagsPerSearch;
         }
@@ -69,6 +105,7 @@ favoriteTags.addEventListener('change', function() {
             chrome.storage.sync.set({
                 favoriteTags: value
             });
+            UpdateLogs();
         } else {
             document.getElementById("favoriteTags").value = elems.favoriteTags;
         }
@@ -81,6 +118,7 @@ requestsDelay.addEventListener('change', function() {
         chrome.storage.sync.set({
             requestsDelay: value
         });
+        UpdateLogs();
     } else {
         chrome.storage.sync.get({
             requestsDelay: 500
