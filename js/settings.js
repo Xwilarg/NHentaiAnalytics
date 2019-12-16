@@ -90,9 +90,11 @@ function UpdateLogs() {
             let items = Object.keys(tags).map(function(key) {
                 return [key, tags[key]];
             });
+            items = items.filter(function(e) { return e[0].split('/')[0] == "tag" ; });
             items.sort(function(first, second) {
                 return second[1] - first[1];
             });
+            items = items.splice(0, elems.favoriteTags);
             logsHtml += JSON.stringify(items);
             document.getElementById("logs").value = logsHtml;
         });
