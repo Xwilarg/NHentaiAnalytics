@@ -15,8 +15,10 @@ document.getElementById("default").addEventListener("click", function() {
     });
 });
 
+var doujinshiDebug;
 function SetDebugLogs(doujinshis) {
     let html = "";
+    doujinshiDebug = doujinshis;
     let items = Object.keys(doujinshis).map(function(key) {
         return [key, doujinshis[key]];
     });
@@ -30,6 +32,17 @@ function SetDebugLogs(doujinshis) {
         html += "<button id='" + elem[0] + "'>" + elem[1][0].name + "</button>";
     });
     document.getElementById("tagsDisplay").innerHTML = html;
+    items.forEach(function(elem) {
+        document.getElementById(elem[0]).addEventListener("click", function() {
+            let doujinshi = doujinshiDebug[elem[0]];
+            let imageHtml = "Tag: " + doujinshi[0].name + "<br/>";
+            for (let i = 1; i < doujinshi.length; i++) {
+                let curr = doujinshi[i];
+                imageHtml += '<a href="http://nhentai.net/g/' + curr.id + '/" target="_blank"><img src="' + curr.image + '"/></a>';
+            }
+            document.getElementById("tagsDisplayImage").innerHTML = imageHtml;
+        });
+    });
 }
 
 SetDebugLogs(chrome.extension.getBackgroundPage().GetDoujinshiDebug());
