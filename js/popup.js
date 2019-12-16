@@ -10,7 +10,11 @@ chrome.storage.sync.get({
 });
 
 chrome.extension.getBackgroundPage().SetLoadingCallback(function(tagCount) {
-    document.getElementById("tagCount").innerHTML = tagCount + " tags loaded.";
+    if (tagCount === -1) {
+        document.getElementById("tagCount").innerHTML = "Tags loaded."
+    } else {
+        document.getElementById("tagCount").innerHTML = "Loading tags... " + tagCount
+    }
 });
 
 document.getElementById("settings").addEventListener("click", function() {
@@ -117,10 +121,12 @@ function LoadFavorites() {
     });
 }
 
-document.getElementById("tagCount").innerHTML = chrome.extension.getBackgroundPage().GetTagsCount() + " tags loaded.";
-
 chrome.storage.sync.get(['tags0'], function(elems) {
-    document.getElementById("savedTagCount").innerHTML = "Tags state: " + (elems.tags0 !== undefined && elems.tags0 !== "" ? "Loaded" : "Not Loaded");
+    if (elems.tags0 !== undefined && elems.tags0 !== "") {
+        document.getElementById("tagCount").innerHTML = "Tags loaded.";
+    } else {
+        document.getElementById("tagCount").innerHTML = "Tags not loaded. If the error persist, reload them manually."
+    }
 });
 
 GetSuggestion();
