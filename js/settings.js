@@ -30,7 +30,7 @@ function SetDebugLogs(doujinshis) {
         return 1;
     });
     items.forEach(function(elem) {
-        html += "<button id='" + elem[0] + "'>" + elem[1][0].name + "</button>";
+        html += "<button class='" + elem[1][0].category + "' id='" + elem[0] + "'>" + elem[1][0].name + "</button>";
     });
     document.getElementById("tagsDisplay").innerHTML = html;
     items.forEach(function(elem) {

@@ -1,3 +1,31 @@
 img {
     width: 200px;
 }
+
+.tag {
+    background-color: rgb(207, 207, 207);
+}
+
+.character {
+    background-color: rgb(214, 108, 108);
+}
+
+.parody {
+    background-color: rgb(185, 106, 159);
+}
+
+.artist {
+    background-color: rgb(145, 146, 204);
+}
+
+.group {
+    background-color: rgb(118, 204, 204);
+}
+
+.category {
+    background-color: rgb(199, 193, 110);
+}
+
+.language {
+    background-color: rgb(110, 192, 110);
+}
