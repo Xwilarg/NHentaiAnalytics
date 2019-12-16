@@ -1,5 +1,6 @@
 let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
+let g_blacklistTags = [];
 let g_suggestedDoujinshi = undefined;
 var loadingCallback = undefined;
 var doujinshiCallback = undefined;
@@ -28,6 +29,7 @@ function CheckForUpdates() {
                         if (doujinshiCount !== elems.doujinshiCount) {
                             g_doujinshis = [];
                             g_tagsCount = {};
+                            LoadBlacklistedTags(this.responseText);
                             LoadFavoritePage(1);
                         }
                     });
@@ -55,6 +57,7 @@ function LoadFavorites() {
                     chrome.storage.sync.set({
                         doujinshiCount: -1
                     });
+                    LoadBlacklistedTags(this.responseText);
                     LoadFavoritePage(1);
                 }
             } else {
@@ -64,6 +67,10 @@ function LoadFavorites() {
     };
     http.open("GET", "https://nhentai.net/favorites/", true);
     http.send();
+}
+
+function LoadBlacklistedTags(html) {
+    g_blacklistTags = JSON.parse(/blacklisted_tags: (\[[^\]]+\])/.exec(html)[1]);
 }
 
 /// Load one page of favorite into storage
@@ -203,6 +210,9 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                 if (this.readyState === 4) {
                     if (this.status === 200) {
                         JSON.parse(this.responseText).tags.forEach(function(elem) {
+                            if (g_blacklistTags.includes(elem.id)) { // Ignore tags that were blacklisted
+                                return;
+                            }
                             let tag = new Tag(elem.id, elem.name, elem.type);
                             let tagId = elem.type + "/" + elem.name;
                             if (g_tagsCount[tagId] === undefined) {
