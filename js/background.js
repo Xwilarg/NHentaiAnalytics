@@ -1,5 +1,4 @@
 let g_doujinshis = []; // User's favorite doujinshis
-let g_tagsPerDoujinshi = {}; // Tags for each doujinshi
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
 let g_suggestedDoujinshi = undefined;
 var loadingCallback = undefined;
@@ -18,7 +17,6 @@ function LoadFavorites(callback) {
                     callback(undefined); // Not logged in
                 } else {
                     g_doujinshis = [];
-                    g_tagsPerDoujinshi = {};
                     g_tagsCount = {};
                     LoadFavoritePage(1, callback);
                 }
@@ -162,10 +160,8 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
             http.onreadystatechange = function() {
                 if (this.readyState === 4) {
                     if (this.status === 200) {
-                        g_tagsPerDoujinshi[id] = [];
                         JSON.parse(this.responseText).tags.forEach(function(elem) {
                             let tag = new Tag(elem.id, elem.name, elem.type);
-                            g_tagsPerDoujinshi[id].push(tag);
                             let tagId = elem.type + "/" + elem.name;
                             if (g_tagsCount[tagId] === undefined) {
                                 g_tagsCount[tagId] = 1;
@@ -218,10 +214,6 @@ function StoreTagsName() {
     }
     storage["tags" + i] = str;
     chrome.storage.sync.set(storage);
-}
-
-function DisplayDounjishis(callback) {
-    callback(g_doujinshis, g_tagsPerDoujinshi);
 }
 
 function GetTagsCount() {
