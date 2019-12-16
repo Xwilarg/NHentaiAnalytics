@@ -125,7 +125,7 @@ chrome.storage.sync.get(['tags0'], function(elems) {
     if (elems.tags0 !== undefined && elems.tags0 !== "") {
         document.getElementById("tagCount").innerHTML = "Tags loaded.";
     } else {
-        document.getElementById("tagCount").innerHTML = "Tags not loaded. If the error persist, reload them manually."
+        document.getElementById("tagCount").innerHTML = "Tags not loaded.<br/>If the error persist, make sure you are connected to NHentai and reload them manually."
     }
 });
 
