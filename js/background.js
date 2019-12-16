@@ -177,10 +177,10 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                LoadTagsInternal(0, "", function() {
+                LoadTagsInternal(0, "", function(tags) {
                     let isError = false;
                     JSON.parse(http.responseText).tags.forEach(function(elem) {
-                        if (elem.type == "tag" && !Object.keys(g_tagsCount).includes(elem.type + '/' + elem.name))
+                        if (elem.type == "tag" && !Object.keys(tags).includes(elem.type + '/' + elem.name))
                         {
                             callbackFailure();
                             isError = true;
@@ -246,8 +246,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
 function LoadTagsInternal(index, str, callback) {
     chrome.storage.sync.get(['tags' + index], function(elems) {
         if (elems['tags' + index] === undefined) {
-            g_tagsCount = JSON.parse(str);
-            callback();
+            callback(JSON.parse(str));
         } else {
             LoadTagsInternal(index + 1, str + elems['tags' + index], callback);
         }
@@ -288,8 +287,8 @@ function GetTagsCount() {
 }
 
 function GetTags(callback) {
-    LoadTagsInternal(0, "", function() {
-        callback(g_tagsCount);
+    LoadTagsInternal(0, "", function(tags) {
+        callback(tags);
     });
 }
 
