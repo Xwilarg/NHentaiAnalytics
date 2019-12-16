@@ -102,7 +102,7 @@ function GetSuggestion() {
 
 function SuggestionToHtml(doujinshi) {
     if (doujinshi === undefined) {
-        document.getElementById("suggestion").innerHTML = "Doujinshi not found...";
+        document.getElementById("suggestion").innerHTML = "Doujinshi not found after 10 tries.<br/>If the error persist, please report it.";
     } else {
         let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
         chrome.storage.sync.get({
