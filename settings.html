@@ -4,20 +4,23 @@
         <div id="nbDoujinshi">Loading...</div>
         <button id="update">Force Update</button> (Only use if automatic update fail)
         <hr/>
-        Preview options:<br/>
+        <h3>Preview options:</h3>
+        Doujinshi image preview:
         <select id="previewImage">
             <option value="show">Display</option>
             <option value="blur">Blur</option>
             <option value="dont">Don't display</option>
         </select>
         <hr/>
-        Search options: (If you're not sure what you're doing, avoid modifying these)<br/>
+        <h3>Search options: (If you're not sure what you're doing, avoid modifying these)</h3>
         Number of tags per search: <input id="tagsPerSearch" type="number"/><br/>
         Number of favorite tags: <input id="favoriteTags" type="number"/><br/>
+        Time between requests: <input id="requestsDelay" type="number"/> ms<br/>
         <button id="default">Restore default</button><br/>
         <br/>
         Explanations:<br/>
         The extension take all the tags from your favorites doujinshi and order them in descending order.<br/>
+        When doing the requests to get each tag, we need to wait between each requests to each doujinshi (so we don't get a 50X error)<br/>
         Then it takes X tags from the top of the list, these tags are considered as your favorite tags.<br/>
         From these X tags, it then take Y random tags and do a search with them.<br/>
         After that it just take a random doujinshi and show it to you.

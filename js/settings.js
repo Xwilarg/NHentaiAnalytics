@@ -23,7 +23,8 @@ chrome.storage.sync.get({
     doujinshiCount: 0,
     previewImage: "show",
     tagsPerSearch: 3,
-    favoriteTags: 5
+    favoriteTags: 5,
+    requestsDelay: 500
 }, function(elems) {
     if (elems.doujinshiCount == -1) { // Update in progress...
         document.getElementById("nbDoujinshi").innerHTML = "0 doujinshis loaded.";
@@ -39,6 +40,7 @@ chrome.storage.sync.get({
     }
     document.getElementById("tagsPerSearch").value = elems.tagsPerSearch;
     document.getElementById("favoriteTags").value = elems.favoriteTags;
+    document.getElementById("requestsDelay").value = elems.requestsDelay;
 });
 
 tagsPerSearch.addEventListener('change', function() {
@@ -47,7 +49,7 @@ tagsPerSearch.addEventListener('change', function() {
         tagsPerSearch: 3,
         favoriteTags: 5
     }, function(elems) {
-        if (!isNaN(value) && value > 1 && value <= elems.favoriteTags) {
+        if (!isNaN(value) && value > 0 && value <= elems.favoriteTags) {
             chrome.storage.sync.set({
                 tagsPerSearch: value
             });
@@ -63,7 +65,7 @@ favoriteTags.addEventListener('change', function() {
         tagsPerSearch: 3,
         favoriteTags: 5
     }, function(elems) {
-        if (!isNaN(value) && value > 1 && value >= elems.tagsPerSearch) {
+        if (!isNaN(value) && value > 0 && value >= elems.tagsPerSearch) {
             chrome.storage.sync.set({
                 favoriteTags: value
             });
@@ -71,6 +73,21 @@ favoriteTags.addEventListener('change', function() {
             document.getElementById("favoriteTags").value = elems.favoriteTags;
         }
     });
+});
+
+requestsDelay.addEventListener('change', function() {
+    let value = parseInt(document.getElementById("requestsDelay").value);
+    if (!isNaN(value) && value >= 0) {
+        chrome.storage.sync.set({
+            requestsDelay: value
+        });
+    } else {
+        chrome.storage.sync.get({
+            requestsDelay: 500
+        }, function(elems) {
+            document.getElementById("requestsDelay").value = elems.requestsDelay;
+        });
+    }
 });
 
 previewImage.addEventListener('change', function() {

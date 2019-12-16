@@ -155,42 +155,44 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
 
 /// Check all doujinshi and get their tags to store them
 function StoreTags(index) { // We wait 500 ms before checking each page so the API doesn't return a 50X error
-    setTimeout(function() {
-        let id = g_doujinshis[index].id;
-        let http = new XMLHttpRequest();
-        http.onreadystatechange = function() {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    g_tagsPerDoujinshi[id] = [];
-                    JSON.parse(this.responseText).tags.forEach(function(elem) {
-                        let tag = new Tag(elem.id, elem.name, elem.type);
-                        g_tagsPerDoujinshi[id].push(tag);
-                        let tagId = elem.type + "/" + elem.name;
-                        if (g_tagsCount[tagId] === undefined) {
-                            g_tagsCount[tagId] = 1;
-                        } else {
-                            g_tagsCount[tagId]++;
-                        }
-                    });
-                    if (loadingCallback !== undefined) {
-                        loadingCallback(GetTagsCount());
-                    }
-                    if (index + 1 !== g_doujinshis.length) {
-                        StoreTags(index + 1);
-                    } else {
-                        StoreTagsName();
+    chrome.storage.sync.get(['requestsDelay'], function(elems) {
+        setTimeout(function() {
+            let id = g_doujinshis[index].id;
+            let http = new XMLHttpRequest();
+            http.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        g_tagsPerDoujinshi[id] = [];
+                        JSON.parse(this.responseText).tags.forEach(function(elem) {
+                            let tag = new Tag(elem.id, elem.name, elem.type);
+                            g_tagsPerDoujinshi[id].push(tag);
+                            let tagId = elem.type + "/" + elem.name;
+                            if (g_tagsCount[tagId] === undefined) {
+                                g_tagsCount[tagId] = 1;
+                            } else {
+                                g_tagsCount[tagId]++;
+                            }
+                        });
                         if (loadingCallback !== undefined) {
-                            loadingCallback(-1);
+                            loadingCallback(GetTagsCount());
                         }
+                        if (index + 1 !== g_doujinshis.length) {
+                            StoreTags(index + 1);
+                        } else {
+                            StoreTagsName();
+                            if (loadingCallback !== undefined) {
+                                loadingCallback(-1);
+                            }
+                        }
+                    } else {
+                        console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
                     }
-                } else {
-                    console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
                 }
-            }
-        };
-        http.open("GET", "https://nhentai.net/api/gallery/" + id, true);
-        http.send();
-    }, 500);
+            };
+            http.open("GET", "https://nhentai.net/api/gallery/" + id, true);
+            http.send();
+        }, elems.requestsDelay);
+    });
 }
 
 function LoadTagsInternal(index, str, callback) {
