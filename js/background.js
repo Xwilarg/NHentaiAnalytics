@@ -2,6 +2,11 @@ let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsPerDoujinshi = {}; // Tags for each doujinshi
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
 let g_suggestedDoujinshi = undefined;
+var loadingCallback = undefined;
+
+function SetLoadingCallback(callback) {
+    loadingCallback = callback;
+}
 
 /// Load favorites into storage
 function LoadFavorites(callback) {
@@ -167,6 +172,9 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                             g_tagsCount[tagId]++;
                         }
                     });
+                    if (loadingCallback !== undefined) {
+                        loadingCallback(GetTagsCount());
+                    }
                     if (index + 1 !== g_doujinshis.length) {
                         StoreTags(index + 1);
                     } else {

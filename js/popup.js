@@ -9,6 +9,10 @@ chrome.storage.sync.get({
     }
 });
 
+chrome.extension.getBackgroundPage().SetLoadingCallback(function(tagCount) {
+    document.getElementById("tagCount").innerHTML = tagCount + " tags loaded.";
+});
+
 document.getElementById("settings").addEventListener("click", function() {
     chrome.tabs.create({ url: "settings.html" });
 });
