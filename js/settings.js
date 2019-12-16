@@ -13,6 +13,7 @@ document.getElementById("default").addEventListener("click", function() {
         tagsPerSearch: 3,
         favoriteTags: 5
     });
+    UpdateLogs();
 });
 
 var doujinshiDebug;
