@@ -6,6 +6,7 @@ chrome.storage.sync.get({
         LoadFavorites();
     } else {
         document.getElementById("doujinshiCount").innerHTML = elems.doujinshiCount + " doujinshis loaded.";
+        chrome.extension.getBackgroundPage().CheckForUpdates();
     }
 });
 
@@ -15,6 +16,8 @@ chrome.extension.getBackgroundPage().SetLoadingCallback(function(tagCount) {
     } else {
         document.getElementById("tagCount").innerHTML = "Loading tags... " + tagCount
     }
+}, function(doujinshiCount) {
+    document.getElementById("doujinshiCount").innerHTML = doujinshiCount + " doujinshis loaded.";
 });
 
 document.getElementById("settings").addEventListener("click", function() {

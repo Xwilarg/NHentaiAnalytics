@@ -2,13 +2,47 @@ let g_doujinshis = []; // User's favorite doujinshis
 let g_tagsCount = {}; // In all favorite doujinshi, number of occurance for each tags
 let g_suggestedDoujinshi = undefined;
 var loadingCallback = undefined;
+var doujinshiCallback = undefined;
+var settingsDoujinshiCallback = undefined;
 
-function SetLoadingCallback(callback) {
-    loadingCallback = callback;
+function SetLoadingCallback(callbackTags, callbackDoujinshi) {
+    loadingCallback = callbackTags;
+    doujinshiCallback = callbackDoujinshi;
+}
+
+function SetSettingsCallback(callbackDoujinshi) {
+    settingsDoujinshiCallback = callbackDoujinshi;
+}
+
+function CheckForUpdates() {
+    let http = new XMLHttpRequest();
+    http.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                if (this.responseText.includes('<span class="count">')) {
+                    let match = /<span class="count">\(([0-9]+)\)<\/span>/.exec(this.responseText);
+                    let doujinshiCount = parseInt(match[1]);
+                    chrome.storage.sync.get({
+                        doujinshiCount: 0
+                    }, function(elems) {
+                        if (doujinshiCount !== elems.doujinshiCount) {
+                            g_doujinshis = [];
+                            g_tagsCount = {};
+                            LoadFavoritePage(1);
+                        }
+                    });
+                }
+            } else {
+                console.error("Error while loading doujinshi count (Code " + this.status + ").");
+            }
+        }
+    };
+    http.open("GET", "https://nhentai.net/favorites/", true);
+    http.send();
 }
 
 /// Load favorites into storage
-function LoadFavorites(callback) {
+function LoadFavorites() {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -18,7 +52,10 @@ function LoadFavorites(callback) {
                 } else {
                     g_doujinshis = [];
                     g_tagsCount = {};
-                    LoadFavoritePage(1, callback);
+                    chrome.storage.sync.set({
+                        doujinshiCount: -1
+                    });
+                    LoadFavoritePage(1);
                 }
             } else {
                 console.error("Error while loading doujinshi count (Code " + this.status + ").");
@@ -38,12 +75,17 @@ function LoadFavoritePage(pageNumber, callback) {
                 let currDoujinshis = GetDoujinshisFromHtml(this.responseText);
                 g_doujinshis = g_doujinshis.concat(currDoujinshis);
                 if (currDoujinshis.length > 0) {
-                    LoadFavoritePage(pageNumber + 1, callback);
+                    LoadFavoritePage(pageNumber + 1);
                 } else {
                     chrome.storage.sync.set({
                         doujinshiCount: g_doujinshis.length
                     });
-                    callback(g_doujinshis.length); // Display doujinshi count on popup
+                    if (doujinshiCallback !== undefined) { // Display doujinshi count on popup
+                        doujinshiCallback(g_doujinshis.length);
+                    }
+                    if (settingsDoujinshiCallback !== undefined) { // Display doujinshi count on popup
+                        settingsDoujinshiCallback(g_doujinshis.length);
+                    }
                     StoreTags(0);
                 }
             } else {
@@ -204,16 +246,31 @@ function LoadTagsInternal(index, str, callback) {
 
 /// Store tags into storage, making sure it doesn't mess with QUOTA_BYTES_PER_ITEM
 function StoreTagsName() {
-    let i = 0;
-    let storage = {};
-    let str = JSON.stringify(g_tagsCount);
-    while (str.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2) {
-        storage["tags" + i] = str.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2);
-        str = str.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2, str.length);
-        i++;
-    }
-    storage["tags" + i] = str;
-    chrome.storage.sync.set(storage);
+    CleanTagsInternal(0, function() {
+        let i = 0;
+        let storage = {};
+        let str = JSON.stringify(g_tagsCount);
+        while (str.length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2) {
+            storage["tags" + i] = str.substr(0, chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2);
+            str = str.substring(chrome.storage.sync.QUOTA_BYTES_PER_ITEM / 2, str.length);
+            i++;
+        }
+        storage["tags" + i] = str;
+        chrome.storage.sync.set(storage);
+    });
+}
+
+function CleanTagsInternal(index, callback) {
+    chrome.storage.sync.get(['tags' + index], function(elems) {
+        if (elems['tags' + index] === undefined) {
+            callback();
+        } else {
+            let storage = {};
+            storage["tags" + index] = "";
+            chrome.storage.sync.set(storage);
+            CleanTagsInternal(index + 1, callback);
+        }
+    });
 }
 
 function GetTagsCount() {
