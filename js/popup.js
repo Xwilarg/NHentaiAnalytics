@@ -147,7 +147,7 @@ function DisplayTagsLoaded() {
             return [key, tags[key]];
         });
         items = items.filter(function(e) { return e[0].split('/')[0] == "tag" ; });
-        if (Object.keys(items).length < 100) {
+        if (items.length < 100) {
             document.getElementById("tagCount").innerHTML += '<p class="red">You have less than 100 tags, search may be less accurate.<br/>Try adding more doujinshi to your favorite.</p>';
         }
     });
