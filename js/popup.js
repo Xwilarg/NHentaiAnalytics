@@ -12,7 +12,7 @@ chrome.storage.sync.get({
 
 chrome.extension.getBackgroundPage().SetLoadingCallback(function(tagCount) {
     if (tagCount === -1) {
-        document.getElementById("tagCount").innerHTML = "Tags loaded."
+        DisplayTagsLoaded();
     } else {
         document.getElementById("tagCount").innerHTML = "Loading tags... " + tagCount
     }
@@ -131,11 +131,20 @@ function LoadFavorites() {
 
 chrome.storage.sync.get(['tags0'], function(elems) {
     if (elems.tags0 !== undefined && elems.tags0 !== "") {
-        document.getElementById("tagCount").innerHTML = "Tags loaded.";
+        DisplayTagsLoaded();
     } else {
         document.getElementById("tagCount").innerHTML = "Tags not loaded.<br/>If the error persist, make sure you are connected to NHentai and reload them manually."
     }
 });
+
+function DisplayTagsLoaded() {
+    document.getElementById("tagCount").innerHTML = "Tags loaded.";
+    chrome.extension.getBackgroundPage().GetTags(function(obj) {
+        if (Object.keys(obj).length < 50) {
+            document.getElementById("tagCount").innerHTML += '<p class="red">You have less than 50 tags, search may not work properly.<br/>Try adding more doujinshi to your favorite.</p>';
+        }
+    });
+}
 
 GetSuggestion();
 

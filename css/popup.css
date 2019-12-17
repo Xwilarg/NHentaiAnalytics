@@ -29,3 +29,7 @@ img {
 .blur {
     filter: blur(5px);
 }
+
+.red {
+    color: red;
+}
