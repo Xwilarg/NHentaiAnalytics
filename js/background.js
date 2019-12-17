@@ -26,6 +26,7 @@ function CheckForUpdates() {
                 if (this.responseText.includes('<span class="count">')) {
                     let match = /<span class="count">\(([0-9]+)\)<\/span>/.exec(this.responseText);
                     let doujinshiCount = parseInt(match[1]);
+                    let responseText = this.responseText;
                     chrome.storage.sync.get({
                         doujinshiCount: 0
                     }, function(elems) {
@@ -33,7 +34,7 @@ function CheckForUpdates() {
                             g_doujinshis = [];
                             g_tagsCount = {};
                             g_doujinshiDebug = {};
-                            LoadBlacklistedTags(this.responseText);
+                            LoadBlacklistedTags(responseText);
                             LoadFavoritePage(1);
                         }
                     });
@@ -92,12 +93,16 @@ function LoadFavoritePage(pageNumber, callback) {
                     chrome.storage.sync.set({
                         doujinshiCount: g_doujinshis.length
                     });
-                    if (doujinshiCallback !== undefined) { // Display doujinshi count on popup
-                        doujinshiCallback(g_doujinshis.length);
-                    }
-                    if (settingsDoujinshiCallback !== undefined) { // Display doujinshi count on popup
-                        settingsDoujinshiCallback(g_doujinshis.length);
-                    }
+                    try {
+                        if (doujinshiCallback !== undefined) { // Display doujinshi count on popup
+                            doujinshiCallback(g_doujinshis.length);
+                        }
+                    } catch(_) {} // Dead object
+                    try {
+                        if (settingsDoujinshiCallback !== undefined) { // Display doujinshi count on popup
+                            settingsDoujinshiCallback(g_doujinshis.length);
+                        }
+                    } catch(_) {} // Dead object
                     StoreTags(0);
                 }
             } else {
@@ -256,19 +261,25 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                                 }
                             }
                         }
-                        if (settingsDebugCallback !== undefined) {
-                            settingsDebugCallback(g_doujinshiDebug);
-                        }
-                        if (loadingCallback !== undefined) {
-                            loadingCallback(GetTagsCount());
-                        }
+                        try {
+                            if (settingsDebugCallback !== undefined) {
+                                settingsDebugCallback(g_doujinshiDebug);
+                            }
+                        } catch(_) {} // Dead object
+                        try {
+                            if (loadingCallback !== undefined) {
+                                loadingCallback(GetTagsCount());
+                            }
+                        } catch(_) {} // Dead object
                         if (index + 1 !== g_doujinshis.length) {
                             StoreTags(index + 1);
                         } else {
                             StoreTagsName();
-                            if (loadingCallback !== undefined) {
-                                loadingCallback(-1);
-                            }
+                            try {
+                                if (loadingCallback !== undefined) {
+                                    loadingCallback(-1);
+                                }
+                            } catch(_) {} // Dead object
                         }
                     } else {
                         console.error("Error while loading doujinshi page " + doujinshiId + " (Code " + this.status + ").");
