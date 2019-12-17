@@ -15,7 +15,19 @@
             <option value="dont">Don't display</option>
         </select>
         <hr/>
-        <h3>Search options: (If you're not sure what you're doing, avoid modifying these)</h3>
+        <h3>Search options:</h3>
+        Strict search is a feature allowing search to be more accurate, if it doesn't find anything after a certains amount of tries, it'll fall back on default search.<br/>
+        <input id="strictSearch" type="checkbox"/> Enable strict search<br/>
+        <div class="sub">
+            Number of tries before falling to default search: <input id="nbTriesBeforeDefault" type="number"/><br/>
+            <input id="defaultSearch" type="checkbox"/> Enable default search (If disabled, search will fail if strict search fail)
+            <div class="sub">
+                Number of tries before failing: <input id="nbTriesBeforeFail" type="number"/>
+            </div>
+        </div>
+        <button id="defaultNormal">Restore default</button><br/>
+        <hr/>
+        <h3>Advanced search options: (If you're not sure what you're doing, avoid modifying these)</h3>
         Number of tags per search: <input id="tagsPerSearch" type="number"/><br/>
         Number of favorite tags: <input id="favoriteTags" type="number"/><br/>
         Time between requests: <input id="requestsDelay" type="number"/> ms<br/>
