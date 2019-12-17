@@ -180,11 +180,11 @@ function GetRandomDoujinshiFromList(doujinshis, nbTries, callback, strictSearch)
             if (!elems.defaultSearch) {
                 maxNbOfTries += nbTriesBeforeFail;
             }
-            if (nbTries == maxNbOfTries) {
+            if (nbTries >= maxNbOfTries) {
                 callback(undefined);
             } else {
                 setTimeout(function() {
-                    if (elems.strictSearch && nbTries <= elems.nbTriesBeforeDefault) {
+                    if (elems.strictSearch && nbTries < elems.nbTriesBeforeDefault) {
                         GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, true);
                     } else {
                         GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, false);
