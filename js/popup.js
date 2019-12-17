@@ -33,6 +33,7 @@ document.getElementById("suggest").addEventListener("click", function() {
 });
 
 function SuggestDoujinshi() {
+    document.getElementById("suggestion").innerHTML = "Loading...";
     chrome.storage.sync.get({
         tags0: "",
         tagsPerSearch: 3,
@@ -102,7 +103,7 @@ function GetSuggestion() {
 
 function SuggestionToHtml(doujinshi) {
     if (doujinshi === undefined) {
-        document.getElementById("suggestion").innerHTML = "Doujinshi not found after 10 tries.<br/>If the error persist, please report it.";
+        document.getElementById("suggestion").innerHTML = "Doujinshi not found after 10 tries.<br/>That probably means you don't have enough favorite for the search to be work properly.";
     } else {
         let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
         chrome.storage.sync.get({
