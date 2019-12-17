@@ -86,8 +86,8 @@ function SuggestDoujinshi() {
                     selectedTags.push(items[index][0]);
                     items.splice(index, 1);
                 }
-                chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + selectedTags.join('+'), function(doujinshi) {
-                    SuggestionToHtml(doujinshi);
+                chrome.extension.getBackgroundPage().GetRandomDoujinshi("https://nhentai.net/search/?q=" + selectedTags.join('+'), function(doujinshi, strictSearch) {
+                    SuggestionToHtml(doujinshi, strictSearch);
                 });
             });
         }
@@ -101,9 +101,9 @@ function GetSuggestion() {
     }
 }
 
-function SuggestionToHtml(doujinshi) {
+function SuggestionToHtml(doujinshi, strictSearch) {
     if (doujinshi === undefined) {
-        document.getElementById("suggestion").innerHTML = "Doujinshi not found after 10 tries.<br/>That probably means you don't have enough favorite for the search to be work properly.";
+        document.getElementById("suggestion").innerHTML = "Doujinshi not found after 20 tries.<br/>That probably means you don't have enough favorite for the search to be work properly.";
     } else {
         let html = '<a href="https://nhentai.net/g/' + doujinshi.id + '/" target="_blank">' + doujinshi.name + '</a><br/>';
         chrome.storage.sync.get({
@@ -113,6 +113,9 @@ function SuggestionToHtml(doujinshi) {
                 html += '<img src="' + doujinshi.image + '"/><br/>';
             } else if (elems.previewImage === "blur") {
                 html += '<img class="blur" src="' + doujinshi.image + '"/><br/>';
+            }
+            if (!strictSearch) {
+                html += "(Strict search was disabled for this search, results may be less accurate)"
             }
             document.getElementById("suggestion").innerHTML = html;
         });
@@ -140,8 +143,8 @@ chrome.storage.sync.get(['tags0'], function(elems) {
 function DisplayTagsLoaded() {
     document.getElementById("tagCount").innerHTML = "Tags loaded.";
     chrome.extension.getBackgroundPage().GetTags(function(obj) {
-        if (Object.keys(obj).length < 50) {
-            document.getElementById("tagCount").innerHTML += '<p class="red">You have less than 50 tags, search may not work properly.<br/>Try adding more doujinshi to your favorite.</p>';
+        if (Object.keys(obj).length < 100) {
+            document.getElementById("tagCount").innerHTML += '<p class="red">You have less than 100 tags, search may be less accurate.<br/>Try adding more doujinshi to your favorite.</p>';
         }
     });
 }

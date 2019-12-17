@@ -150,7 +150,7 @@ function GetRandomDoujinshiFromPage(url, callback) {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let doujinshis = GetDoujinshisFromHtml(this.responseText);
-                GetRandomDoujinshiFromList(doujinshis, 0, callback);
+                GetRandomDoujinshiFromList(doujinshis, 0, callback, true);
             } else {
                 console.error("Error while loading page " + url + " (Code " + this.status + ").");
             }
@@ -160,28 +160,36 @@ function GetRandomDoujinshiFromPage(url, callback) {
     http.send();
 }
 
-function GetRandomDoujinshiFromList(doujinshis, nbTries, callback) {
+function GetRandomDoujinshiFromList(doujinshis, nbTries, callback, strictSearch) {
     currDoujinshi = doujinshis[Math.floor(Math.random() * doujinshis.length)];
     CheckDoujinshiValid(currDoujinshi, function() {
         g_suggestedDoujinshi = currDoujinshi;
-        callback(g_suggestedDoujinshi);
+        callback(g_suggestedDoujinshi, strictSearch);
     }, function() {
-        if (nbTries == 9) {
+        if (nbTries >= 19) {
+            chrome.storage.sync.get({
+                requestsDelay: 500
+            }, function(elems) {
+                setTimeout(function() {
+                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, false);
+                }, elems.requestsDelay);
+            });
+        } else if (nbTries >= 9) {
             callback(undefined);
         } else {
             chrome.storage.sync.get({
                 requestsDelay: 500
             }, function(elems) {
                 setTimeout(function() {
-                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback);
+                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, true);
                 }, elems.requestsDelay);
             });
         }
-    });
+    }, strictSearch);
 }
 
 /// Check if a doujinshi contains the right tags
-function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
+function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure, strictSearch) {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -191,7 +199,8 @@ function CheckDoujinshiValid(doujinshi, callbackSuccess, callbackFailure) {
                     let httpTags = JSON.parse(http.responseText).tags;
                     for (let i = 0; i < httpTags.length; i++) {
                         let elem = httpTags[i];
-                        if (elem.type == "tag" && !Object.keys(tags).includes('tag/' + elem.name))
+                        if ((strictSearch && elem.type == "tag" && !Object.keys(tags).includes('tag/' + elem.name)) || 
+                            (!strictSearch && g_blacklistTags.includes(elem.id)))
                         {
                             callbackFailure();
                             isError = true;
