@@ -142,8 +142,12 @@ chrome.storage.sync.get(['tags0'], function(elems) {
 
 function DisplayTagsLoaded() {
     document.getElementById("tagCount").innerHTML = "Tags loaded.";
-    chrome.extension.getBackgroundPage().GetTags(function(obj) {
-        if (Object.keys(obj).length < 100) {
+    chrome.extension.getBackgroundPage().GetTags(function(tags) {
+        let items = Object.keys(tags).map(function(key) {
+            return [key, tags[key]];
+        });
+        items = items.filter(function(e) { return e[0].split('/')[0] == "tag" ; });
+        if (Object.keys(items).length < 100) {
             document.getElementById("tagCount").innerHTML += '<p class="red">You have less than 100 tags, search may be less accurate.<br/>Try adding more doujinshi to your favorite.</p>';
         }
     });
