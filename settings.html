@@ -16,7 +16,6 @@
         </select>
         <hr/>
         <h3>Search options:</h3>
-        Strict search is a feature allowing search to be more accurate, if it doesn't find anything after a certains amount of tries, it'll fall back on default search.<br/>
         <input id="strictSearch" type="checkbox"/> Enable strict search<br/>
         <div class="sub">
             Number of tries before falling back to default search: <input id="nbTriesBeforeDefault" type="number"/><br/>
@@ -26,6 +25,12 @@
             Number of tries for default search before failing: <input id="nbTriesBeforeFail" type="number"/>
         </div>
         <button id="defaultNormal">Restore default</button><br/>
+        <br/>
+        Explanations:<br/>
+        Strict search is a feature allowing search to be more accurate but to have less chance to success.<br/>
+        The more different tags you have, the more likely the search will succeed (to be sure it doesn't fail, you should have at least 100).<br/>
+        To know how many you have, you can check the "Tag count (uncategorized)" in the "Logs for bug report" section.<br/>
+        If it doesn't find anything after a certains amount of tries, it'll fall back on default search.<br/>
         <hr/>
         <h3>Advanced search options: (If you're not sure what you're doing, avoid modifying these)</h3>
         Number of tags per search: <input id="tagsPerSearch" type="number"/><br/>
