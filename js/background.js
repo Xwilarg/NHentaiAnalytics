@@ -321,7 +321,11 @@ function CleanTagsInternal(index, callback) {
 }
 
 function GetTagsCount() {
-    return Object.keys(g_tagsCount).length;
+    let items = Object.keys(g_tagsCount).map(function(key) {
+        return [key, g_tagsCount[key]];
+    });
+    items = items.filter(function(e) { return e[0].split('/')[0] == "tag" ; });
+    return items.length;
 }
 
 function GetTags(callback) {

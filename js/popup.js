@@ -97,7 +97,7 @@ function SuggestDoujinshi() {
 function GetSuggestion() {
     let doujinshi = chrome.extension.getBackgroundPage().GetSuggestion();
     if (doujinshi !== undefined) {
-        SuggestionToHtml(doujinshi);
+        SuggestionToHtml(doujinshi, true);
     }
 }
 
