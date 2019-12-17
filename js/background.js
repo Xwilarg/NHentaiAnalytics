@@ -75,7 +75,7 @@ function LoadFavorites() {
 }
 
 function LoadBlacklistedTags(html) {
-    g_blacklistTags = JSON.parse(/blacklisted_tags: (\[[^\]]+\])/.exec(html)[1]);
+    g_blacklistTags = JSON.parse(/blacklisted_tags: (\[[^\]]*\])/.exec(html)[1]);
 }
 
 /// Load one page of favorite into storage
