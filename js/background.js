@@ -166,25 +166,32 @@ function GetRandomDoujinshiFromList(doujinshis, nbTries, callback, strictSearch)
         g_suggestedDoujinshi = currDoujinshi;
         callback(g_suggestedDoujinshi, strictSearch);
     }, function() {
-        if (nbTries >= 19) {
-            chrome.storage.sync.get({
-                requestsDelay: 500
-            }, function(elems) {
+        chrome.storage.sync.get({
+            requestsDelay: 500,
+            strictSearch: true,
+            nbTriesBeforeDefault: 10,
+            defaultSearch: false,
+            nbTriesBeforeFail: 10
+        }, function(elems) {
+            let maxNbOfTries = 0;
+            if (elems.strictSearch) {
+                maxNbOfTries = elems.nbTriesBeforeDefault;
+            }
+            if (!elems.defaultSearch) {
+                maxNbOfTries += nbTriesBeforeFail;
+            }
+            if (nbTries == maxNbOfTries) {
+                callback(undefined);
+            } else {
                 setTimeout(function() {
-                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, false);
+                    if (elems.strictSearch && nbTries <= elems.nbTriesBeforeDefault) {
+                        GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, true);
+                    } else {
+                        GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, false);
+                    }
                 }, elems.requestsDelay);
-            });
-        } else if (nbTries >= 9) {
-            callback(undefined);
-        } else {
-            chrome.storage.sync.get({
-                requestsDelay: 500
-            }, function(elems) {
-                setTimeout(function() {
-                    GetRandomDoujinshiFromList(doujinshis, nbTries + 1, callback, true);
-                }, elems.requestsDelay);
-            });
-        }
+            }
+        });
     }, strictSearch);
 }
 
