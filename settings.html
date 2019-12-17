@@ -19,11 +19,11 @@
         Strict search is a feature allowing search to be more accurate, if it doesn't find anything after a certains amount of tries, it'll fall back on default search.<br/>
         <input id="strictSearch" type="checkbox"/> Enable strict search<br/>
         <div class="sub">
-            Number of tries before falling to default search: <input id="nbTriesBeforeDefault" type="number"/><br/>
-            <input id="defaultSearch" type="checkbox"/> Enable default search (If disabled, search will fail if strict search fail)
-            <div class="sub">
-                Number of tries before failing: <input id="nbTriesBeforeFail" type="number"/>
-            </div>
+            Number of tries before falling back to default search: <input id="nbTriesBeforeDefault" type="number"/><br/>
+            <input id="defaultSearch" type="checkbox"/> Don't fall back on default search (if strict search fail, the search will fail)
+        </div>
+        <div class="sub">
+            Number of tries for default search before failing: <input id="nbTriesBeforeFail" type="number"/>
         </div>
         <button id="defaultNormal">Restore default</button><br/>
         <hr/>
