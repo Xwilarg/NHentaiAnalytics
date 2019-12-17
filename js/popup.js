@@ -5,7 +5,7 @@ chrome.storage.sync.get({
     } else if (elems.doujinshiCount == 0) {
         LoadFavorites();
     } else {
-        document.getElementById("doujinshiCount").innerHTML = elems.doujinshiCount + " doujinshis loaded.";
+        document.getElementById("doujinshiCount").innerHTML = elems.doujinshiCount + " doujinshis detected.";
         chrome.extension.getBackgroundPage().CheckForUpdates();
     }
 });
@@ -17,7 +17,7 @@ chrome.extension.getBackgroundPage().SetLoadingCallback(function(tagCount) {
         document.getElementById("tagCount").innerHTML = "Loading tags... " + tagCount
     }
 }, function(doujinshiCount) {
-    document.getElementById("doujinshiCount").innerHTML = doujinshiCount + " doujinshis loaded.";
+    document.getElementById("doujinshiCount").innerHTML = doujinshiCount + " doujinshis detected.";
 });
 
 document.getElementById("settings").addEventListener("click", function() {
@@ -127,7 +127,7 @@ function LoadFavorites() {
         if (nb === undefined) {
             document.getElementById("doujinshiCount").innerHTML = "You must be logged in NHentai.";
         } else {
-            document.getElementById("doujinshiCount").innerHTML = nb + " doujinshis loaded.";
+            document.getElementById("doujinshiCount").innerHTML = nb + " doujinshis detected.";
         }
     });
 }
