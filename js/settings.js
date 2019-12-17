@@ -135,7 +135,7 @@ function UpdateLogs() {
     }, function(elems) {
         let logsHtml = "Browser: ";
         if (typeof browser !== "undefined") {
-            logsHtml += "Firefox v" + Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo).version;
+            logsHtml += "Firefox v" + /Firefox\/([0-9.]+)/.exec(navigator.userAgent)[1];
         } else {
             logsHtml += "Chrome v" + /Chrome\/([0-9.]+)/.exec(navigator.userAgent)[1];
         }
