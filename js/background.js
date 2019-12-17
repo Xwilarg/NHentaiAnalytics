@@ -178,7 +178,7 @@ function GetRandomDoujinshiFromList(doujinshis, nbTries, callback, strictSearch)
                 maxNbOfTries = elems.nbTriesBeforeDefault;
             }
             if (!elems.defaultSearch) {
-                maxNbOfTries += nbTriesBeforeFail;
+                maxNbOfTries += elems.nbTriesBeforeFail;
             }
             if (nbTries >= maxNbOfTries) {
                 callback(undefined);
