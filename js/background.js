@@ -53,19 +53,17 @@ function LoadFavorites() {
     let http = new XMLHttpRequest();
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
-            if (this.status === 200) {
-                if (this.responseText.includes("Abandon all hope, ye who enter here")) {
-                    callback(undefined); // Not logged in
-                } else {
-                    g_doujinshis = [];
-                    g_tagsCount = {};
-                    g_doujinshiDebug = {};
-                    chrome.storage.sync.set({
-                        doujinshiCount: -1
-                    });
-                    LoadBlacklistedTags(this.responseText);
-                    LoadFavoritePage(1);
-                }
+            if (this.status === 429) {
+                loadingCallback(undefined); // Not logged in
+            } else if (this.status === 200) {
+                g_doujinshis = [];
+                g_tagsCount = {};
+                g_doujinshiDebug = {};
+                chrome.storage.sync.set({
+                    doujinshiCount: -1
+                });
+                LoadBlacklistedTags(this.responseText);
+                LoadFavoritePage(1);
             } else {
                 console.error("Error while loading doujinshi count (Code " + this.status + ").");
             }
