@@ -245,7 +245,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                         for (let i = 0; i < httpTags.length; i++) {
                             let elem = httpTags[i];
                             if (g_blacklistTags.includes(elem.id)) { // Ignore tags that were blacklisted
-                                return;
+                                continue;
                             }
                             let tag = new Tag(elem.id, elem.name, elem.type);
                             let tagId = elem.type + "/" + elem.name;
