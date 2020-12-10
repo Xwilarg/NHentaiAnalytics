@@ -134,7 +134,7 @@ function GetRandomDoujinshi(url, callback) {
     http.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                let match = /<a href="\?q=[^&]+&amp;page=([0-9]+)" class="last">/.exec(this.responseText);
+                let match = /\?q=[^&]+&amp;page=([0-9]+)" class="last">/.exec(this.responseText);
                 let maxPage = parseInt(match[1]);
                 GetRandomDoujinshiFromPage(url + "&page=" + (Math.floor(Math.random() * maxPage) + 1), callback);
             } else {
