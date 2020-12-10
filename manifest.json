@@ -1,6 +1,6 @@
 {
     "name": "NHentai Analytics",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A chrome extension to help you find the best doujinshi based on your favorites",
     "applications": {
       "gecko": {
