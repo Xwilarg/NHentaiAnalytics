@@ -115,17 +115,14 @@ function LoadFavoritePage(pageNumber, callback) {
 /// Get all doujinshis that are in a page, return an array of Doujinshi
 function GetDoujinshisFromHtml(html) {
     let currDoujinshis = [];
-    let matchs = /<a href="\/g\/([0-9]+)\/".+img src="([^"]+)".+<div class="caption">([^<]+)<\/div>/g; // Get all doujinshis
-    do {
-        match = matchs.exec(html);
-        if (match !== null) {
-            let image = match[2];
-            if (image.startsWith("//")) {
-                image = "https:" + image;
-            }
-            currDoujinshis.push(new Doujinshi(match[1], image, match[3]));
+    html.split('<div class="gallery"').slice(1).forEach(e => {
+        let match = e.match(/<a href="\/g\/([0-9]+)\/".+img src="([^"]+)".+<div class="caption">([^<]+)<\/div>/)
+        let image = match[2];
+        if (image.startsWith("//")) {
+            image = "https:" + image;
         }
-    } while (match);
+        currDoujinshis.push(new Doujinshi(match[1], image, match[3]));
+    });
     return currDoujinshis;
 }
 
