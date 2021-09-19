@@ -4,7 +4,7 @@
     "description": "A chrome extension to help you find the best doujinshi based on your favorites",
     "applications": {
       "gecko": {
-        "id": "xwilarg@yahoo.fr"
+        "id": "nhentaianalytics@zirk.eu"
       }
     },
     "icons": {

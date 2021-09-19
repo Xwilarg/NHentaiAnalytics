@@ -266,7 +266,7 @@ function StoreTags(index) { // We wait 500 ms before checking each page so the A
                                 loadingCallback(GetTagsCount());
                             }
                         } catch(_) {} // Dead object
-                        if (index + 1 !== g_doujinshis.length) {
+                        if (index + 1 < g_doujinshis.length) {
                             StoreTags(index + 1);
                         } else {
                             StoreTagsName();
