@@ -3,9 +3,7 @@ A Chrome/Firefox extension to help you find the best doujinshi based on your fav
 Just login to NHentai and the extension will give you a random doujinshi based on your preferences<br/>
 ![Preview](preview/preview.png)<br/>
 ### Chrome
-[![Chrome Store](https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png)](https://chrome.google.com/webstore/detail/nhentai-downloader/noojgpoenpbagfefondnchijcelchfln)<br/>
-[![Users](https://img.shields.io/chrome-web-store/users/noojgpoenpbagfefondnchijcelchfln.svg?style=flat)](https://chrome.google.com/webstore/detail/nhentai-downloader/noojgpoenpbagfefondnchijcelchfln)
-[![Reviews](https://img.shields.io/chrome-web-store/stars/noojgpoenpbagfefondnchijcelchfln.svg?style=flat)](https://chrome.google.com/webstore/detail/nhentai-downloader/noojgpoenpbagfefondnchijcelchfln)
+[![Chrome Store](https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png)](https://chrome.google.com/webstore/detail/nhentai-downloader/noojgpoenpbagfefondnchijcelchfln)
 
 ### Firefox
 The extension isn't available on the Firefox Add-ons Store because it doesn't comply with [Mozilla’s Acceptable Use Policy](https://www.mozilla.org/about/legal/acceptable-use/).<br/>
