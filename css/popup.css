@@ -1,16 +1,20 @@
 html {
     width: 200px;
+    background-color: #333;
+    color: #eee;
+    width: min-content;
+    padding: 5.5px;
 }
 
 button {
     border: none;
-    background-color: white;
+    background-color: #2A2A2A;
     height: 50px;
+    color: #eee;
 }
 
 .fullLength {
-    width: 202px;
-    margin-left: -10px;
+    width: 185px;
 }
 
 .midLength {
@@ -19,7 +23,7 @@ button {
 
 button:hover {
     cursor: pointer;
-    background-color: lightblue;
+    background-color: #222;
 }
 
 img {
@@ -32,4 +36,21 @@ img {
 
 .red {
     color: red;
+}
+
+a:link {
+  text-decoration: none;
+  color: #ce4735;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  text-decoration: underline;
 }
